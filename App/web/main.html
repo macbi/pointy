@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
+        integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            eel.expose(say_hello_js);               // Expose this function to Python
+            function say_hello_js(x) {
+                console.log("Hello from " + x);
+            }
+            say_hello_js("Javascript World!");
+            eel.handleinput("connected!");  // Call a Python function
+
+            $("#btn").click(function () {
+                let x = $("#inpX").val();
+                let y = $("#inpY").val();
+                let coordinate = $("#coordinate-select").val();
+                eel.getHeight(x, y, coordinate)().then((result) => {
+
+                    console.log(result);
+                    eel.handleinput(result);
+                    document.getElementById('display').innerHTML ="Height: " + result;
+                }).catch((result) => {
+                    console.log("This is the repr(e) for an exception " + result.errorText);
+                    console.log("This is the full traceback:\n" + result.errorTraceback);
+                }
+                );
+                eel.getMap(x, y, coordinate)().then((result) => {
+                    document.getElementById('map').innerHTML = '<img src="map.jpg" alt="map" width=500 height=500/>';
+                }).catch((result) => {
+                    console.log("This is the repr(e) for an exception " + result.errorText);
+                    console.log("This is the full traceback:\n" + result.errorTraceback);
+                }
+                );
+            });
+
+        }); 
+    </script>
+</head>
+
+<body>
+    <h1>Get height</h1>
+    <h2>Enter coordinates and coordinate system</h2>
+    <div>
+        <input type='number' id='inpX' placeholder='X'>
+        <input type='number' id='inpY' placeholder='Y'>
+        <label for="coordinate-select">Choose a coordinate system:</label>
+        <select name="coordinate" id="coordinate-select">
+            <option value="2176">2000 strefa 5 (EPSG:2176)</option>
+            <option value="2177">2000 strefa 6 (EPSG:2177)</option>
+            <option value="2178">2000 strefa 7 (EPSG:2178)</option>
+            <option value="2179">2000 strefa 8 (EPSG:2179)</option>
+            <option value="2180">1992 (EPSG:2180)</option>
+            <option value="4326">WGS84 (EPSG:4326)</option>
+            <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
+            <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
+            <option value="4258">ETRS89 (EPSG:4258)</option>
+        </select>
+        <input type='button' id='btn' class='btn btn-primary' value='Submit'>
+    </div>
+    <p><span id='display'></span></p>
+    <p><span id='map'></span></p>
+</body>
+
+</html>
