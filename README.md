@@ -11,13 +11,13 @@ Check Eel documantation on how to publish app:
 
 ## Roadmap
 
-1. Add feature for excel file importing/exporting
+- [ ] 1. Add feature for excel file importing/exporting
 
-2. Add feature for transforming excel lat/long data into KML layer
+- [ ] 2. Add feature for transforming excel lat/long data into KML layer
 
-3. Create map-based data validation tool
+- [ ] 3. Create map-based data validation tool
 
-4. Polish UI/UX
+- [ ] 4. Polish UI/UX
 
-5. Add logging feature
+- [ ] 5. Add logging feature
 
