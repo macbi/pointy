@@ -8,6 +8,8 @@ import pandas as pd
 eel.init('web')                     # Give folder containing web files
 
 pointData = pd.DataFrame()
+fileName = ""
+wildcard="Pliki Excel (*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt"
 
 @eel.expose                         # Expose this function to Javascript
 def handleinput(x):
@@ -44,15 +46,34 @@ def getMap(X,Y,coordinate_system):
 @eel.expose
 def getFilePath(): 
     app = wx.App(None) ## necessary for opening dialog
-    wildcard="Pliki Excel (*.xls;*.xlsx;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xls;*.xlsx;*.xlsm;*.xlsb;*.odf;*.ods;*.odt"
-    style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+    style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.STAY_ON_TOP
     with wx.FileDialog(None, 'Open', wildcard=wildcard, style=style) as dialog:
         if dialog.ShowModal() == wx.ID_CANCEL:
                 return     # the user changed their mind
 
         path = dialog.GetPath()
+        global fileName
+        fileName = dialog.GetFilename()
 
         return path
+    
+def getOutputFilePath():
+    app = wx.App(None)
+    style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.STAY_ON_TOP
+    with wx.FileDialog(None, 'Save', wildcard=wildcard, style=style, defaultFile=f"{fileName.split('.')[0]}_results.xlsx") as dialog:
+        if dialog.ShowModal() == wx.ID_CANCEL:
+            return     # the user changed their mind
+
+        path = dialog.GetPath()
+
+        return path
+    
+@eel.expose
+def saveDataFrameToExcel():
+    path = getOutputFilePath()
+    if path:
+        pointData.to_excel(path, index=False)
+
 
 @eel.expose
 def getExcelSheetNames(path):
@@ -63,6 +84,8 @@ def getExcelSheetNames(path):
 def getHTMLTable(path, sheet_name, headers):
     df = pd.read_excel(path, sheet_name)
     df = df[headers]
+    global pointData
+    pointData = df
     return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
 def getHeaders(df):
