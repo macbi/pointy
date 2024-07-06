@@ -31,15 +31,19 @@ def getPointHeight(X,Y,input_crs):
         X = float(X)
         Y = float(Y)
     except ValueError:
-        return {'X and Y must be numbers'}
+        return 'X and Y must be numbers'
 
-    x, y = transformCoordinates(X,Y,input_crs,2180)
-    print(f'X: {x}, Y: {y}')
+    if input_crs != 2180:
+        x, y = transformCoordinates(X,Y,input_crs,2180)
+        print(f'X: {x}, Y: {y}')
+    else:
+        x = Y
+        y = X
     
     response = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={x}&y={y}')
     print(response.json(), response.status_code)
     if response.status_code != 200:
-        return {'server error'}
+        return 'server error'
     return response.json()
 
 @eel.expose
@@ -50,18 +54,6 @@ def addHeightToDataFrame(input_crs):
     pointData = df
     return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
-
-@eel.expose
-def getHeight(X,Y,coordinate_system):
-    print(X,Y,coordinate_system)
-    transfomer = Transformer.from_crs(f'epsg:{coordinate_system}', "epsg:2180")
-    transformed = transfomer.transform(Y, X) # Y first, X second, return x, y
-
-    print(transformed)
-    
-    respone = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={transformed[0]}&y={transformed[1]}')
-    print(respone.json(), respone.status_code)
-    return respone.json()
 
 @eel.expose
 def getMap(X,Y,coordinate_system):
@@ -120,6 +112,8 @@ def getExcelSheetNames(path):
 def getHTMLTable(path, sheet_name, headers):
     df = pd.read_excel(path, sheet_name)
     df = df[headers]
+    # update headers names to number, X and Y
+    df.columns = ['Name', 'X', 'Y']
     global pointData
     pointData = df
     return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
