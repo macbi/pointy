@@ -13,11 +13,13 @@ Check Eel documantation on how to publish app:
 
 - [x] 1. Add feature for excel file importing/exporting
 
-- [ ] 2. Add feature for transforming excel lat/long data into KML layer
+- [x] 2. Add getting height method
 
-- [ ] 3. Create map-based data validation tool
+- [ ] 3. Add feature for transforming excel lat/long data into KML layer
 
-- [ ] 4. Polish UI/UX
+- [ ] 4. Create map-based data validation tool
 
-- [ ] 5. Add logging feature
+- [ ] 5. Polish UI/UX
+
+- [ ] 6. Add logging feature
 

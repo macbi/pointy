@@ -15,6 +15,42 @@ wildcard="Pliki Excel (*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xlsx;*.xl
 def handleinput(x):
     print('%s' % x)
 
+def transformCoordinates(X,Y,input_crs,output_crs):
+    transfomer = Transformer.from_crs(f'epsg:{input_crs}', f'epsg:{output_crs}')
+    x, y = transfomer.transform(Y, X) # Y first, X second, return x, y
+    return x, y
+
+    # x = row['Y_2000']
+    # y = row['X_2000']
+    # transformer = Transformer.from_crs("epsg:2176", "epsg:4326") # second value is always 2180, first need to be adjusted to your data
+    # x, y = transformer.transform(x, y)
+
+def getPointHeight(X,Y,input_crs):
+    #check if x and y are numbers
+    try:
+        X = float(X)
+        Y = float(Y)
+    except ValueError:
+        return {'X and Y must be numbers'}
+
+    x, y = transformCoordinates(X,Y,input_crs,2180)
+    print(f'X: {x}, Y: {y}')
+    
+    response = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={x}&y={y}')
+    print(response.json(), response.status_code)
+    if response.status_code != 200:
+        return {'server error'}
+    return response.json()
+
+@eel.expose
+def addHeightToDataFrame(input_crs):
+    global pointData
+    df = pointData
+    df['Height'] = df.apply(lambda row: getPointHeight(row['X'], row['Y'], input_crs), axis=1)
+    pointData = df
+    return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
+
+
 @eel.expose
 def getHeight(X,Y,coordinate_system):
     print(X,Y,coordinate_system)
@@ -99,4 +135,4 @@ def getExcelSheetData(path, sheet_name):
 
 eel.say_hello_js('connected!')   # Call a Javascript function
 
-eel.start('main.html', size=(1000, 1000))    # Start
+eel.start('main.html', cmdline_args=['--start-maximized'])    # Start
