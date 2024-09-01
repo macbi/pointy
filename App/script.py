@@ -1,3 +1,4 @@
+import time
 import eel
 from pyproj import Transformer
 import requests
@@ -15,15 +16,14 @@ wildcard="Pliki Excel (*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xlsx;*.xl
 def handleinput(x):
     print('%s' % x)
 
+eel.say_hello_js('connected!')   # Call a Javascript function
+
 def transformCoordinates(X,Y,input_crs,output_crs):
     transfomer = Transformer.from_crs(f'epsg:{input_crs}', f'epsg:{output_crs}')
     x, y = transfomer.transform(Y, X) # Y first, X second, return x, y
     return x, y
 
-    # x = row['Y_2000']
-    # y = row['X_2000']
-    # transformer = Transformer.from_crs("epsg:2176", "epsg:4326") # second value is always 2180, first need to be adjusted to your data
-    # x, y = transformer.transform(x, y)
+## Get height of point from GUGiK API
 
 def getPointHeight(X,Y,input_crs):
     #check if x and y are numbers
@@ -38,38 +38,27 @@ def getPointHeight(X,Y,input_crs):
         print(f'X: {x}, Y: {y}')
     else:
         x = Y
-        y = X
+        y = X 
     
+    # wait to avoid server error
+    time.sleep(0.5)
+
     response = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={x}&y={y}')
-    print(response.json(), response.status_code)
+    print(response.status_code)
     if response.status_code != 200:
+        print(response.text)
         return 'server error'
+    print(response.json())
     return response.json()
 
 @eel.expose
 def addHeightToDataFrame(input_crs):
     global pointData
-    df = pointData
-    df['Height'] = df.apply(lambda row: getPointHeight(row['X'], row['Y'], input_crs), axis=1)
-    pointData = df
-    return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
+    pointData['Height'] = pointData.apply(lambda row: getPointHeight(row['X'], row['Y'], input_crs), axis=1)
+    return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
 
-@eel.expose
-def getMap(X,Y,coordinate_system):
-    wms = WebMapService("https://mapy.geoportal.gov.pl/wss/service/img/guest/TOPO/MapServer/WMSServer")
-    x = Y
-    y = X
-    print(x, y)
-    transformer = Transformer.from_crs(f'epsg:{coordinate_system}', "epsg:2180") # second value is always 2180, first need to be adjusted to your data
-    x_trans, y_trans = transformer.transform(x, y)
-    max_y = y_trans + 6000
-    min_y = y_trans - 6000
-    min_x = x_trans - 6000
-    max_x = x_trans + 6000
-    img = wms.getmap(layers=['Raster'], styles=['default'], srs='EPSG:2180', bbox=( min_y, min_x, max_y, max_x), size=(1000, 1000), format='image/jpeg', transparent=True)
-    with open('web/map.jpg', 'wb') as out:
-        out.write(img.read())
+## File path handling
 
 @eel.expose
 def getFilePath(): 
@@ -96,6 +85,8 @@ def getOutputFilePath():
 
         return path
     
+## Data frame handling
+
 @eel.expose
 def saveDataFrameToExcel():
     path = getOutputFilePath()
@@ -126,7 +117,26 @@ def getExcelSheetData(path, sheet_name):
     xl = pd.ExcelFile(path)
     return getHeaders(xl.parse(sheet_name))
 
+## map handling
 
-eel.say_hello_js('connected!')   # Call a Javascript function
+@eel.expose
+def showPointsOnMap(input_crs):
+    eel.clearMap()
+    pointsList = []
+
+    for index, row in pointData.iterrows():
+        #check if x and y are numbers
+        try:
+            X = float(row['X'])
+            Y = float(row['Y'])
+        except ValueError:
+            print('X and Y must be numbers')
+            continue
+        x, y = transformCoordinates(X,Y,input_crs,4326)
+        print(f'x: {x}, y: {y}, Name: {row["Name"]}')
+        eel.addMarker(x, y, row['Name'])
+        pointsList.append(eel.LatLng(x, y))  
+
+    eel.getCenterAndFlyTo(pointsList)
 
 eel.start('main.html', cmdline_args=['--start-maximized'])    # Start

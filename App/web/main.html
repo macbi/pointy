@@ -9,176 +9,74 @@
         crossorigin="anonymous"></script>
     <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
     <script type="text/javascript" src="/eel.js"></script>
-    <script type="text/javascript">
+    <script type="text/javascript" src="script.js"></script>
 
 
-        function getPathToData() {
-            eel.getFilePath()((result) => {
-                console.log(result);
-                if (result === null) {
-                    return;
-                }
-
-                console.log(result);
-                var file = result;
-                console.log(file);
-                $('#file').text(file);
-                console.log(file);
-
-                eel.getExcelSheetNames(file)((result) => {
-                    console.log(result);
-                    $('#sheet').empty().append(buildSelect("sheet_slct", result).on('change', function () {
-                        // refresh name, x, y selects
-                        let selectedSheet = $(this).val();
-                        console.log(selectedSheet);
-                        console.log(file);
-
-                        eel.getExcelSheetData(file, selectedSheet)((result) => {
-                            console.log(result);
-                            $('#name').empty().append(buildSelect("name_slct", result, 0));
-                            $('#inpX').empty().append(buildSelect("x_slct", result, 1));
-                            $('#inpY').empty().append(buildSelect("y_slct", result, 2));
-                        })
-                    }));
-
-                    let selectedSheet = $('#sheet_slct')[0].value;
-
-                    eel.getExcelSheetData(file, selectedSheet)((result) => {
-                        console.log(result);
-                        $('#name').empty().append(buildSelect("name_slct", result, 0));
-                        $('#inpX').empty().append(buildSelect("x_slct", result, 1));
-                        $('#inpY').empty().append(buildSelect("y_slct", result, 2));
-                    })
-                });
-                $('#btn_data').prop('disabled', false);
-                $('#btn_data').removeClass('btn-outline-secondary').addClass('btn-secondary');
-                $('#btn_start').removeClass('btn-primary').addClass('btn-outline-primary');
-            });
-        }
-
-        function buildSelect(id, options, selectedValue = 0) {
-
-            var $select = $('<select id="' + id + '"></select>');
-            var $option;
-
-            for (let i = 0; i < options.length; i++) {
-                $option = $('<option value="' + options[i] + '">' + options[i] + '</option>');
-                if (i === selectedValue) {
-                    $option.attr('selected', true);
-                }
-                $select.append($option);
-            }
-
-            return $select;
-        }
-
-        $(function () {
-
-            eel.expose(say_hello_js);               // Expose this function to Python
-            function say_hello_js(x) {
-                console.log("Hello from " + x);
-            }
-            say_hello_js("Javascript World!");
-            eel.handleinput("connected!");  // Call a Python function
-
-            $("#btn_start").click(function () {
-                getPathToData();
-            });
-
-            $("#btn_data").click(function () {
-                let x = $("#x_slct").val();
-                let y = $("#y_slct").val();
-                let name = $("#name_slct").val();
-                let sheet = $("#sheet_slct").val();
-                let file = $("#file").text();
-                console.log(x, y, name, sheet, file);
-                eel.getHTMLTable(file, sheet, [name, x, y])().then((result) => {
-                    $('#display').empty().append(result);
-                    $('#btn_data').removeClass('btn-secondary').addClass('btn-outline-secondary');
-                    $('#btn_height').prop('disabled', false);
-                    $('#btn_kml').prop('disabled', false);
-                    $('#btn_map').prop('disabled', false);
-                    $('#btn_export').prop('disabled', false);
-                    $('#btn_height').removeClass('btn-outline-secondary').addClass('btn-secondary');
-                    $('#btn_kml').removeClass('btn-outline-secondary').addClass('btn-secondary');
-                    $('#btn_map').removeClass('btn-outline-secondary').addClass('btn-secondary');
-                    $('#btn_export').removeClass('btn-outline-secondary').addClass('btn-secondary');
-                }).catch((result) => {
-                    console.log("This is the repr(e) for an exception " + result.errorText);
-                    console.log("This is the full traceback:\n" + result.errorTraceback);
-                }
-                );
-
-            });
-
-            $("#btn_export").click(function () {
-                eel.saveDataFrameToExcel()().then((result) => {
-
-                }).catch((result) => {
-                    console.log("This is the repr(e) for an exception " + result.errorText);
-                    console.log("This is the full traceback:\n" + result.errorTraceback);
-                });
-            });
-
-            $("#btn_height").click(function () {
-                let input_crs = $("#coordinate-select").val();
-                eel.addHeightToDataFrame(input_crs)().then((result) => {
-                    $('#display').empty().append(result);
-                }).catch((result) => {
-                    console.log("This is the repr(e) for an exception " + result.errorText);
-                    console.log("This is the full traceback:\n" + result.errorTraceback);
-                });
-            });
-
-        }); 
-    </script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+    
+    
+    <link rel="stylesheet" href="styles.css "> 
+    </style>
 </head>
 
 <body>
-    <h1>Get height</h1>
-    <h2>Enter coordinates and coordinate system</h2>
-    <div>
-        <button id="btn_start" class="btn btn-primary btn-sm">Select File</button>
-        <label for="file">File path:</label>
-        <span id="file"></span>
-    </div>
-    <label for="sheet">Sheet name:</label>
-    <span id="sheet"></span>
+    <div id="map"></div>
+    <script type="text/javascript" src="map.js"></script>
+    <div class="container">
+        <h1 class="display-5">Pointy</h1>
+        <h2 class="lead">Select excel file with point-data you want to edit</h2>
+        <div>
+            <div>
+                <button id="btn_start" class="btn btn-primary btn-sm">Select File</button>
+                <label for="file">File path:</label>
+                <span id="file"></span>
+            </div>
+            <div>
+                <label for="sheet">Sheet name:</label>
+                <span id="sheet"></span>
 
-    <label for="name">Name:</label>
-    <span id="name"> </span>
-    <label for="inpX">X:</label>
-    <span id="inpX"> </span>
-    <label for="inpY">Y:</label>
-    <span id="inpY"> </span>
-    <div>
-        <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
-    </div>
-    <div>
+                <label for="name">Name:</label>
+                <span id="name"> </span>
+                <label for="inpX">X:</label>
+                <span id="inpX"> </span>
+                <label for="inpY">Y:</label>
+                <span id="inpY"> </span>
+            </div>
+            <div>
+                <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
+            </div>
+            <div>
 
-        <label for="coordinate-select">Choose a coordinate system:</label>
-        <select name="coordinate" id="coordinate-select">
-            <option value="2176">2000 strefa 5 (EPSG:2176)</option>
-            <option value="2177">2000 strefa 6 (EPSG:2177)</option>
-            <option value="2178">2000 strefa 7 (EPSG:2178)</option>
-            <option value="2179">2000 strefa 8 (EPSG:2179)</option>
-            <option value="2180">1992 (EPSG:2180)</option>
-            <option value="4326">WGS84 (EPSG:4326)</option>
-            <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
-            <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
-            <option value="4258">ETRS89 (EPSG:4258)</option>
-        </select>
+                <label for="coordinate-select">Choose a coordinate system:</label>
+                <select name="coordinate" id="coordinate-select">
+                    <option value="2176">2000 strefa 5 (EPSG:2176)</option>
+                    <option value="2177">2000 strefa 6 (EPSG:2177)</option>
+                    <option value="2178">2000 strefa 7 (EPSG:2178)</option>
+                    <option value="2179">2000 strefa 8 (EPSG:2179)</option>
+                    <option value="2180">1992 (EPSG:2180)</option>
+                    <option value="4326">WGS84 (EPSG:4326)</option>
+                    <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
+                    <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
+                    <option value="4258">ETRS89 (EPSG:4258)</option>
+                </select>
 
-    </div>
-    <div>
-        <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled>Get Height</button>
-        <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>Get KML</button>
-        <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Show Map</button>
-        <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Create Output File</button>
-    </div>
+            </div>
+            <div>
+                <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled>Get Height</button>
+                <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>Get KML</button>
+                <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Show Points</button>
+                <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Create Output File</button>
+            </div>
+        </div>
 
-    <p><span id='display'></span></p>
-    <p><span id='map'></span></p>
+        <p><span id='display'></span></p>
+        
+    </div>
 </body>
 
 </html>
