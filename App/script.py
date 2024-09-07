@@ -135,7 +135,7 @@ def showPointsOnMap(input_crs):
         x, y = transformCoordinates(X,Y,input_crs,4326)
         print(f'x: {x}, y: {y}, Name: {row["Name"]}')
         eel.addMarker(x, y, row['Name'])
-        pointsList.append(eel.LatLng(x, y))  
+        pointsList.append([x, y])  
 
     eel.getCenterAndFlyTo(pointsList)
 
