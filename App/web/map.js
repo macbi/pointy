@@ -22,7 +22,7 @@ $(function () {
 
         console.log(centroid);
 
-        map.flyTo([centroid[0], centroid[1]], 15);
+        map.flyTo([centroid[0], centroid[1]], 12);
     }
 
     function clearMap() {

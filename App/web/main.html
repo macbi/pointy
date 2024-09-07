@@ -25,57 +25,62 @@
 </head>
 
 <body>
-    <div id="map"></div>
-    <script type="text/javascript" src="map.js"></script>
     <div class="container">
-        <h1 class="display-5">Pointy</h1>
-        <h2 class="lead">Select excel file with point-data you want to edit</h2>
-        <div>
-            <div>
-                <button id="btn_start" class="btn btn-primary btn-sm">Select File</button>
-                <label for="file">File path:</label>
-                <span id="file"></span>
-            </div>
-            <div>
-                <label for="sheet">Sheet name:</label>
-                <span id="sheet"></span>
+        <div class="row">
+            <div class="col">
+                <h1 class="display-5">Pointy</h1>
+                <h2 class="lead">Select excel file with point-data you want to edit</h2>
+                <div>
+                    <div>
+                        <button id="btn_start" class="btn btn-primary btn-sm">Select File</button>
+                        <label for="file">File path:</label>
+                        <span id="file"></span>
+                    </div>
+                    <div>
+                        <label for="sheet">Sheet name:</label>
+                        <span id="sheet"></span>
 
-                <label for="name">Name:</label>
-                <span id="name"> </span>
-                <label for="inpX">X:</label>
-                <span id="inpX"> </span>
-                <label for="inpY">Y:</label>
-                <span id="inpY"> </span>
-            </div>
-            <div>
-                <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
-            </div>
-            <div>
+                        <label for="name">Name:</label>
+                        <span id="name"> </span>
+                        <label for="inpX">X:</label>
+                        <span id="inpX"> </span>
+                        <label for="inpY">Y:</label>
+                        <span id="inpY"> </span>
+                    </div>
+                    <div>
+                        <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
+                    </div>
+                    <div>
 
-                <label for="coordinate-select">Choose a coordinate system:</label>
-                <select name="coordinate" id="coordinate-select">
-                    <option value="2176">2000 strefa 5 (EPSG:2176)</option>
-                    <option value="2177">2000 strefa 6 (EPSG:2177)</option>
-                    <option value="2178">2000 strefa 7 (EPSG:2178)</option>
-                    <option value="2179">2000 strefa 8 (EPSG:2179)</option>
-                    <option value="2180">1992 (EPSG:2180)</option>
-                    <option value="4326">WGS84 (EPSG:4326)</option>
-                    <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
-                    <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
-                    <option value="4258">ETRS89 (EPSG:4258)</option>
-                </select>
+                        <label for="coordinate-select">Choose a coordinate system:</label>
+                        <select name="coordinate" id="coordinate-select">
+                            <option value="2176">2000 strefa 5 (EPSG:2176)</option>
+                            <option value="2177">2000 strefa 6 (EPSG:2177)</option>
+                            <option value="2178">2000 strefa 7 (EPSG:2178)</option>
+                            <option value="2179">2000 strefa 8 (EPSG:2179)</option>
+                            <option value="2180">1992 (EPSG:2180)</option>
+                            <option value="4326">WGS84 (EPSG:4326)</option>
+                            <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
+                            <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
+                            <option value="4258">ETRS89 (EPSG:4258)</option>
+                        </select>
 
+                    </div>
+                    <div>
+                        <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled>Get Height</button>
+                        <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>Get KML</button>
+                        <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Show Points</button>
+                        <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Create Output File</button>
+                    </div>
+                </div>
+
+                <p><span id='display'></span></p>
             </div>
-            <div>
-                <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled>Get Height</button>
-                <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>Get KML</button>
-                <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Show Points</button>
-                <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Create Output File</button>
+            <div class="col">
+                <div id="map" class="container"></div>
+                <script type="text/javascript" src="map.js"></script>
             </div>
         </div>
-
-        <p><span id='display'></span></p>
-        
     </div>
 </body>
 
