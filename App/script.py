@@ -2,9 +2,14 @@ import time
 import eel
 from pyproj import Transformer
 import requests
-from owslib.wms import WebMapService
-import wx
+
 import pandas as pd
+from tkinter import Tk
+from tkinter import filedialog
+
+root = Tk()
+root.attributes('-topmost', True)  # Display the dialog in the foreground.
+root.withdraw()  # Hide the little window.
 
 eel.init('web')                     # Give folder containing web files
 
@@ -62,28 +67,16 @@ def addHeightToDataFrame(input_crs):
 
 @eel.expose
 def getFilePath(): 
-    app = wx.App(None) ## necessary for opening dialog
-    style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.STAY_ON_TOP
-    with wx.FileDialog(None, 'Open', wildcard=wildcard, style=style) as dialog:
-        if dialog.ShowModal() == wx.ID_CANCEL:
-                return     # the user changed their mind
 
-        path = dialog.GetPath()
-        global fileName
-        fileName = dialog.GetFilename()
+    filePath = filedialog.askopenfilename(filetypes=[('Excel files', '*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt')])
+    global fileName
+    fileName = filePath.split('/')[-1]
 
-        return path
+    return filePath
     
 def getOutputFilePath():
-    app = wx.App(None)
-    style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.STAY_ON_TOP
-    with wx.FileDialog(None, 'Save', wildcard=wildcard, style=style, defaultFile=f"{fileName.split('.')[0]}_results.xlsx") as dialog:
-        if dialog.ShowModal() == wx.ID_CANCEL:
-            return     # the user changed their mind
 
-        path = dialog.GetPath()
-
-        return path
+    return filedialog.asksaveasfilename(defaultextension='.xlsx', initialfile = f"{fileName.split('.')[0]}_results")
     
 ## Data frame handling
 

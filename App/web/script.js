@@ -65,17 +65,12 @@ $(function () {
     });
 
     function getPathToData() {
-    eel.getFilePath()((result) => {
-        console.log(result);
-        if (result === null) {
+    eel.getFilePath()((file) => {
+        if (file === "") {
             return;
         }
-
-        console.log(result);
-        var file = result;
-        console.log(file);
+        
         $('#file').text(file);
-        console.log(file);
 
         eel.getExcelSheetNames(file)((result) => {
             console.log(result);
