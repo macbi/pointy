@@ -133,7 +133,13 @@ def showPointsOnMap(input_crs):
             continue
         x, y = transformCoordinates(X,Y,input_crs,4326)
         print(f'x: {x}, y: {y}, Name: {row["Name"]}')
-        eel.addMarker(x, y, row['Name'])
+        
+        height = row.get('Height')
+        if height:
+            popupName = f'<p><b>{row["Name"]}</b> <br> {height} m ASL</p>'
+        else:
+            popupName = f'<p><b>{row["Name"]}</b></p>'
+        eel.addMarker(x, y, popupName)
         pointsList.append([x, y])  
 
     eel.getCenterAndFlyTo(pointsList)

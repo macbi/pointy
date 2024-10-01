@@ -12,9 +12,9 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 $(function () {
-    function addMarker(lat, lon, name) {
-        console.log("Adding marker: " + lat + ", " + lon + " " + name);
-        try { L.marker([lat, lon]).addTo(map).bindPopup(String(name));} catch (e) { console.log(e); }
+    function addMarker(lat, lon, popupName) {
+        console.log("Adding marker: " + lat + ", " + lon + " " + popupName);
+        try { L.marker([lat, lon]).addTo(map).bindPopup(String(popupName));} catch (e) { console.log(e); }
     }
 
     function getCenterAndFlyTo(LatLngs) {
