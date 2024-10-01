@@ -59,9 +59,15 @@ def getPointHeight(X,Y,input_crs):
 @eel.expose
 def addHeightToDataFrame(input_crs):
     global pointData
-    pointData['Height'] = pointData.apply(lambda row: getPointHeight(row['X'], row['Y'], input_crs), axis=1)
+    for index, row in pointData.iterrows():
+        height = getPointHeight(row['X'],row['Y'],input_crs)
+        pointData.at[index, 'Height'] = height
+        updateProgress(f"{(index+1)}/{len(pointData)}")
     return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
+
+def updateProgress(progress):
+    eel.updateProgress(progress)
 
 ## File path handling
 

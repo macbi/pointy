@@ -19,6 +19,7 @@ $(function () {
         let file = $("#file").text();
         console.log(x, y, name, sheet, file);
         eel.getHTMLTable(file, sheet, [name, x, y])().then((result) => {
+            $('#progress').empty();
             $('#display').empty().append(result);
             $('#btn_data').removeClass('btn-secondary').addClass('btn-outline-secondary');
             $('#btn_height').prop('disabled', false);
@@ -63,6 +64,10 @@ $(function () {
             console.log("This is the full traceback:\n" + result.errorTraceback);
         });
     });
+
+    function updateProgress(progress) {
+        $('#progress').text(progress);
+    }
 
     function getPathToData() {
     eel.getFilePath()((file) => {
@@ -119,5 +124,6 @@ function buildSelect(id, options, selectedValue = 0) {
     return $select;
 }
 
+eel.expose(updateProgress);
 
 }); 
