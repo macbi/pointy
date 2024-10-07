@@ -2,10 +2,10 @@ import time
 import eel
 from pyproj import Transformer
 import requests
-
 import pandas as pd
 from tkinter import Tk
 from tkinter import filedialog
+import simplekml
 
 root = Tk()
 root.attributes('-topmost', True)  # Display the dialog in the foreground.
@@ -80,15 +80,15 @@ def getFilePath():
 
     return filePath
     
-def getOutputFilePath():
+def getOutputFilePath(extension):
 
-    return filedialog.asksaveasfilename(defaultextension='.xlsx', initialfile = f"{fileName.split('.')[0]}_results")
+    return filedialog.asksaveasfilename(defaultextension=extension, initialfile = f"{fileName.split('.')[0]}_results")
     
 ## Data frame handling
 
 @eel.expose
 def saveDataFrameToExcel():
-    path = getOutputFilePath()
+    path = getOutputFilePath('.xlsx')
     if path:
         pointData.to_excel(path, index=False)
 
@@ -143,5 +143,31 @@ def showPointsOnMap(input_crs):
         pointsList.append([x, y])  
 
     eel.getCenterAndFlyTo(pointsList)
+
+## KML handling
+
+def dataFrameToKml(df, input_crs):
+    kml = simplekml.Kml()
+    for index, row in pointData.iterrows():
+        #check if x and y are numbers
+        X = float(row['X'])
+        Y = float(row['Y'])
+        x, y = transformCoordinates(X,Y,input_crs,4326)
+        print(f'x: {x}, y: {y}, Name: {row["Name"]}')
+        point = kml.newpoint(name=row['Name'], coords=[(y,x)])
+        
+        height = row.get('Height')
+        if height:
+            point.description = f'{height} m ASL'
+    return kml
+
+@eel.expose
+def saveDataFrameToKML(input_crs):
+    kml = dataFrameToKml(pointData, input_crs)
+    kml.document.name = fileName.split('.')[0]
+    path = getOutputFilePath('.kml')
+    if path:
+        kml.save(path)
+
 
 eel.start('main.html', cmdline_args=['--start-maximized'])    # Start

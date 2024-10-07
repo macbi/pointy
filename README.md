@@ -17,9 +17,9 @@ Check Eel documantation on how to publish app:
 
 - [ ] 3. Add feature for transforming excel lat/long data into KML layer
 
-- [ ] 4. Create map-based data validation tool
+- [x] 4. Create map-based data validation tool
 
-- [ ] 5. Polish UI/UX
+- [ ] 5. Add logging feature
 
-- [ ] 6. Add logging feature
+- [ ] 6. Polish UI/UX
 

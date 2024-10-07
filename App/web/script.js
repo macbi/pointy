@@ -65,6 +65,14 @@ $(function () {
         });
     });
 
+    $("#btn_kml").click(function () {
+        let input_crs = $("#coordinate-select").val();
+        eel.saveDataFrameToKML(input_crs)().then((result) => { }).catch((result) => {
+            console.log("This is the repr(e) for an exception " + result.errorText);
+            console.log("This is the full traceback:\n" + result.errorTraceback);
+        });
+    });
+
     function updateProgress(progress) {
         $('#progress').text(progress);
     }
