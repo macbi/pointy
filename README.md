@@ -15,7 +15,7 @@ Check Eel documantation on how to publish app:
 
 - [x] 2. Add getting height method
 
-- [ ] 3. Add feature for transforming excel lat/long data into KML layer
+- [x] 3. Add feature for transforming excel lat/long data into KML layer
 
 - [x] 4. Create map-based data validation tool
 

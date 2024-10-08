@@ -82,7 +82,7 @@ def getFilePath():
     
 def getOutputFilePath(extension):
 
-    return filedialog.asksaveasfilename(defaultextension=extension, initialfile = f"{fileName.split('.')[0]}_results")
+    return filedialog.asksaveasfilename(defaultextension=extension, initialfile = f"{fileName.split('.')[0]}_results", filetypes=[("All Files","*.*")])
     
 ## Data frame handling
 
