@@ -132,6 +132,40 @@ function buildSelect(id, options, selectedValue = 0) {
     return $select;
 }
 
+function buildList(items) {
+    var $list = $('<ul class="list-group""></ul>');
+    var $item;
+
+    for (let i = 0; i < items.length; i++) {
+        switch(items[i].type) {
+            case 'success':
+                itemPrefix = '<li class="list-group-item list-group-item-success">';
+                break;
+            case 'error':
+                itemPrefix = '<li class="list-group-item list-group-item-danger">';
+                break;
+            case 'warning':
+                itemPrefix = '<li class="list-group-item list-group-item-warning">';
+                break;
+            case 'info':
+                itemPrefix = '<li class="list-group-item list-group-item-info">';
+                break;
+            default:
+                itemPrefix = '<li class="list-group-item list-group-item-light">';
+        }
+
+        $item = $(itemPrefix + items[i].message + '</li>');
+        $list.append($item);
+    }
+
+    return $list;
+}
+
+function updateList(id, items) {
+    $('#' + id).empty().append(buildList(items));
+}
+
 eel.expose(updateProgress);
+eel.expose(updateList);
 
 }); 

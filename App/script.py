@@ -14,8 +14,13 @@ root.withdraw()  # Hide the little window.
 eel.init('web')                     # Give folder containing web files
 
 pointData = pd.DataFrame()
+loggingList = []
 fileName = ""
 wildcard="Pliki Excel (*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt"
+
+def log(message):
+    loggingList.insert(0, message)
+    eel.updateList("logging-list", loggingList)
 
 @eel.expose                         # Expose this function to Javascript
 def handleinput(x):
@@ -114,6 +119,7 @@ def getHeaders(df):
 @eel.expose
 def getExcelSheetData(path, sheet_name):
     xl = pd.ExcelFile(path)
+    log({"type":'success', "message":f'Loaded sheet: {sheet_name}'})
     return getHeaders(xl.parse(sheet_name))
 
 ## map handling
