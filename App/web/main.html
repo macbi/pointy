@@ -13,75 +13,91 @@
 
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""></script>
-    
-    
-    <link rel="stylesheet" href="styles.css "> 
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+
+    <link rel="stylesheet" href="styles.css ">
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="display-5">Pointy</h1>
-                <h2 class="lead">Select excel file with point-data you want to edit</h2>
-                <div>
-                    <div>
-                        <button id="btn_start" class="btn btn-primary btn-sm">Select File</button>
-                        <label for="file">File path:</label>
-                        <span id="file"></span>
-                    </div>
-                    <div>
-                        <label for="sheet">Sheet name:</label>
-                        <span id="sheet"></span>
+    <div class="row px-md-4 py-md-4">
+        <div class="col-6">
 
-                        <label for="name">Name:</label>
-                        <span id="name"> </span>
-                        <label for="inpX">X:</label>
-                        <span id="inpX"> </span>
-                        <label for="inpY">Y:</label>
-                        <span id="inpY"> </span>
-                    </div>
-                    <div>
-                        <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
-                    </div>
-                    <div>
 
-                        <label for="coordinate-select">Choose a coordinate system:</label>
-                        <select name="coordinate" id="coordinate-select">
-                            <option value="2176">2000 strefa 5 (EPSG:2176)</option>
-                            <option value="2177">2000 strefa 6 (EPSG:2177)</option>
-                            <option value="2178">2000 strefa 7 (EPSG:2178)</option>
-                            <option value="2179">2000 strefa 8 (EPSG:2179)</option>
-                            <option value="2180">1992 (EPSG:2180)</option>
-                            <option value="4326">WGS84 (EPSG:4326)</option>
-                            <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
-                            <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
-                            <option value="4258">ETRS89 (EPSG:4258)</option>
-                        </select>
+            <div class="input-group mb-3">
+                <button class="btn btn-success btn-sm" type="button" id="btn_start">Select File</button>
+                <input type="text" class="form-control" placeholder="" id="file" disabled>
+            </div>
 
-                    </div>
-                    <div>
-                        <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled>Get Height</button>
-                        <label id="progress" for="btn_height"></label>
-                        <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>Get KML</button>
-                        <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Show Points</button>
-                        <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Create Output File</button>
-                    </div>
+
+
+            <div class="row">
+                <div class="col-md-3"> <label for="sheet">Sheet:</label>
+                    <span id="sheet"></span>
                 </div>
 
-                <p><span id='display'></span></p>
+                <div class="col-md-3"> <label for="name">Name:</label>
+                    <span id="name"> </span>
+                </div>
+
+                <div class="col-md-2"> <label for="inpX">X:</label>
+                    <span id="inpX"> </span>
+                </div>
+
+                <div class="col-md-2"> <label for="inpY">Y:</label>
+                    <span id="inpY"> </span>
+                </div>
+                <div class="col-md-2">
+                    <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
+                </div>
             </div>
-            <div class="col">
-                <div id="map" class="container"></div>
-                <script type="text/javascript" src="map.js"></script>
-                <ul class="list-group list-group" id="logging-list"></ul>
+
+            <div class="row">
+                <div class="col-5">
+                    <label for="coordinate-select">CRS:</label>
+                    <select name="coordinate" id="coordinate-select">
+                        <option value="2176">2000 strefa 5 (EPSG:2176)</option>
+                        <option value="2177">2000 strefa 6 (EPSG:2177)</option>
+                        <option value="2178">2000 strefa 7 (EPSG:2178)</option>
+                        <option value="2179">2000 strefa 8 (EPSG:2179)</option>
+                        <option value="2180">1992 (EPSG:2180)</option>
+                        <option value="4326">WGS84 (EPSG:4326)</option>
+                        <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
+                        <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
+                        <option value="4258">ETRS89 (EPSG:4258)</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
+                            Height</span></button>
+                    <label id="progress" for="btn_height"></label>
+                </div>
+                <div class="col-2">
+                    <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Update Map</button>
+                </div>
+                <div class="col-3">
+                    <label for="btn_export">Export:</label>
+                    <div class="btn-group">
+                        <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Excel</button>
+                        <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>KML</button>
+                    </div>
+                </div>
             </div>
+
+
+            <span id='display'></span>
+
         </div>
+
+        <div class="col-lg-6">
+
+            <div id="map" class="container"></div>
+            <script type="text/javascript" src="map.js"></script>
+            <ul class="list-group list-group" id="logging-list"></ul>
+        </div>
+    </div>
     </div>
 </body>
 

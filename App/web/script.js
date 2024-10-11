@@ -16,7 +16,7 @@ $(function () {
         let y = $("#y_slct").val();
         let name = $("#name_slct").val();
         let sheet = $("#sheet_slct").val();
-        let file = $("#file").text();
+        let file = $("#file").val();
         console.log(x, y, name, sheet, file);
         eel.getHTMLTable(file, sheet, [name, x, y])().then((result) => {
             $('#progress').empty();
@@ -30,6 +30,8 @@ $(function () {
             $('#btn_kml').removeClass('btn-outline-secondary').addClass('btn-secondary');
             $('#btn_map').removeClass('btn-outline-secondary').addClass('btn-secondary');
             $('#btn_export').removeClass('btn-outline-secondary').addClass('btn-secondary');
+            $('#btn_map').click();
+            eel.log({ "type":"info","message":'If map shows wierd points position, try changing CRS.'})
         }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);
@@ -48,9 +50,11 @@ $(function () {
     });
 
     $("#btn_height").click(function () {
+        $("#btn_height").prop('disabled', true).empty().append('<span class="spinner-border spinner-border-sm"></span><span role="status">Fetching...</span>');
         let input_crs = $("#coordinate-select").val();
         eel.addHeightToDataFrame(input_crs)().then((result) => {
             $('#display').empty().append(result);
+            $("#btn_height").prop('disabled', false).empty().append('<span role="status">Get Height</span>');
         }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);
@@ -83,7 +87,9 @@ $(function () {
             return;
         }
         
-        $('#file').text(file);
+        $('#file').val( $('#file').val() + file );
+
+        eel.log({ "type":"","message":'File selected. Please choose sheet and columns.'})
 
         eel.getExcelSheetNames(file)((result) => {
             console.log(result);
@@ -112,7 +118,7 @@ $(function () {
         });
         $('#btn_data').prop('disabled', false);
         $('#btn_data').removeClass('btn-outline-secondary').addClass('btn-secondary');
-        $('#btn_start').removeClass('btn-primary').addClass('btn-outline-primary');
+        $('#btn_start').removeClass('btn-success').addClass('btn-outline-success');
     });
 }
 
@@ -164,6 +170,12 @@ function buildList(items) {
 function updateList(id, items) {
     $('#' + id).empty().append(buildList(items));
 }
+
+$("#coordinate-select").change(function () {
+    crsName = $("#coordinate-select option:selected").text();
+   eel.log({"type":"warning","message": `You selected ${crsName} CRS. It will be used for all operations now.`});
+});
+
 
 eel.expose(updateProgress);
 eel.expose(updateList);

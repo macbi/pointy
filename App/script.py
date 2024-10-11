@@ -16,7 +16,6 @@ eel.init('web')                     # Give folder containing web files
 pointData = pd.DataFrame()
 loggingList = []
 fileName = ""
-wildcard="Pliki Excel (*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt"
 
 @eel.expose
 def log(message):
@@ -36,7 +35,7 @@ def transformCoordinates(X,Y,input_crs,output_crs):
 
 ## Get height of point from GUGiK API
 
-def getPointHeight(X,Y,input_crs):
+def getPointHeight(name,X,Y,input_crs):
     #check if x and y are numbers
     try:
         X = float(X)
@@ -57,7 +56,7 @@ def getPointHeight(X,Y,input_crs):
     response = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={x}&y={y}')
     print(response.status_code)
     if response.status_code != 200:
-        log({"type":'error', "message":f'{response.status_code} - server error'})
+        log({"type":'error', "message":f'{response.status_code} - server error for point {name}'})
         print(response.text)
         return 'server error'
     print(response.json())
@@ -68,13 +67,13 @@ def addHeightToDataFrame(input_crs):
     global pointData
     errorNumber = 0
     for index, row in pointData.iterrows():
-        height = getPointHeight(row['X'],row['Y'],input_crs)
+        height = getPointHeight(row['Name'],row['X'],row['Y'],input_crs)
         if height == 'server error':
             errorNumber += 1
         pointData.at[index, 'Height'] = height
         updateProgress(f"{(index+1)}/{len(pointData)}")
     if errorNumber > 0:
-        log({"type":'warning', "message":f'{errorNumber} points with server error'})
+        log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error'})
     else:
         log({"type":'success', "message":f'Heights added to all points'})
     return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
@@ -88,7 +87,7 @@ def updateProgress(progress):
 @eel.expose
 def getFilePath(): 
 
-    filePath = filedialog.askopenfilename(filetypes=[('Excel files', '*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt')])
+    filePath = filedialog.askopenfilename(filetypes=[('Excel files', '*.xlsx')])
     global fileName
     fileName = filePath.split('/')[-1] 
 
