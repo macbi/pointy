@@ -90,10 +90,10 @@ $(function () {
             $('#sheet').empty().append(buildSelect("sheet_slct", result).on('change', function () {
                 // refresh name, x, y selects
                 let selectedSheet = $(this).val();
-                console.log(selectedSheet);
+                console.log(selectedSheet); 
                 console.log(file);
 
-                eel.getExcelSheetData(file, selectedSheet)((result) => {
+                eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
                     console.log(result);
                     $('#name').empty().append(buildSelect("name_slct", result, 0));
                     $('#inpX').empty().append(buildSelect("x_slct", result, 1));
@@ -103,7 +103,7 @@ $(function () {
 
             let selectedSheet = $('#sheet_slct')[0].value;
 
-            eel.getExcelSheetData(file, selectedSheet)((result) => {
+            eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
                 console.log(result);
                 $('#name').empty().append(buildSelect("name_slct", result, 0));
                 $('#inpX').empty().append(buildSelect("x_slct", result, 1));
@@ -167,5 +167,7 @@ function updateList(id, items) {
 
 eel.expose(updateProgress);
 eel.expose(updateList);
+
+eel.log({ "type":"","message":'App started. Please load Excel file.'})
 
 }); 

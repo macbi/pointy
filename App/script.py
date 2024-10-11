@@ -18,6 +18,7 @@ loggingList = []
 fileName = ""
 wildcard="Pliki Excel (*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt)|*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt"
 
+@eel.expose
 def log(message):
     loggingList.insert(0, message)
     eel.updateList("logging-list", loggingList)
@@ -56,6 +57,7 @@ def getPointHeight(X,Y,input_crs):
     response = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={x}&y={y}')
     print(response.status_code)
     if response.status_code != 200:
+        log({"type":'error', "message":f'{response.status_code} - server error'})
         print(response.text)
         return 'server error'
     print(response.json())
@@ -64,10 +66,17 @@ def getPointHeight(X,Y,input_crs):
 @eel.expose
 def addHeightToDataFrame(input_crs):
     global pointData
+    errorNumber = 0
     for index, row in pointData.iterrows():
         height = getPointHeight(row['X'],row['Y'],input_crs)
+        if height == 'server error':
+            errorNumber += 1
         pointData.at[index, 'Height'] = height
         updateProgress(f"{(index+1)}/{len(pointData)}")
+    if errorNumber > 0:
+        log({"type":'warning', "message":f'{errorNumber} points with server error'})
+    else:
+        log({"type":'success', "message":f'Heights added to all points'})
     return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
 
@@ -81,7 +90,7 @@ def getFilePath():
 
     filePath = filedialog.askopenfilename(filetypes=[('Excel files', '*.xlsx;*.xls;*.xlsm;*.xlsb;*.odf;*.ods;*.odt')])
     global fileName
-    fileName = filePath.split('/')[-1]
+    fileName = filePath.split('/')[-1] 
 
     return filePath
     
@@ -96,6 +105,7 @@ def saveDataFrameToExcel():
     path = getOutputFilePath('.xlsx')
     if path:
         pointData.to_excel(path, index=False)
+        log({"type":'success', "message":f'Excel file saved as {path}'})
 
 
 @eel.expose
@@ -111,16 +121,13 @@ def getHTMLTable(path, sheet_name, headers):
     df.columns = ['Name', 'X', 'Y']
     global pointData
     pointData = df
+    log({"type":'info', "message":f'Excel file loaded: {len(pointData)} points'})
     return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
-def getHeaders(df):
-    return df.columns.values.tolist()
-
 @eel.expose
-def getExcelSheetData(path, sheet_name):
+def getExcelSheetHeaders(path, sheet_name):
     xl = pd.ExcelFile(path)
-    log({"type":'success', "message":f'Loaded sheet: {sheet_name}'})
-    return getHeaders(xl.parse(sheet_name))
+    return xl.parse(sheet_name).columns.values.tolist()
 
 ## map handling
 
@@ -136,6 +143,7 @@ def showPointsOnMap(input_crs):
             Y = float(row['Y'])
         except ValueError:
             print('X and Y must be numbers')
+            log({"type":'error', "message":'Displaying points on map error: X and Y must be numbers'})
             continue
         x, y = transformCoordinates(X,Y,input_crs,4326)
         print(f'x: {x}, y: {y}, Name: {row["Name"]}')
@@ -152,12 +160,17 @@ def showPointsOnMap(input_crs):
 
 ## KML handling
 
-def dataFrameToKml(df, input_crs):
+def dataFrameToKml(input_crs):
     kml = simplekml.Kml()
     for index, row in pointData.iterrows():
         #check if x and y are numbers
-        X = float(row['X'])
-        Y = float(row['Y'])
+        try:
+            X = float(row['X'])
+            Y = float(row['Y'])
+        except ValueError:
+            print('X and Y must be numbers')
+            log({"type":'error', "message":'Displaying points on map error: X and Y must be numbers'})
+            continue
         x, y = transformCoordinates(X,Y,input_crs,4326)
         print(f'x: {x}, y: {y}, Name: {row["Name"]}')
         point = kml.newpoint(name=row['Name'], coords=[(y,x)])
@@ -169,11 +182,12 @@ def dataFrameToKml(df, input_crs):
 
 @eel.expose
 def saveDataFrameToKML(input_crs):
-    kml = dataFrameToKml(pointData, input_crs)
+    kml = dataFrameToKml(input_crs)
     kml.document.name = fileName.split('.')[0]
     path = getOutputFilePath('.kml')
     if path:
         kml.save(path)
+        log({"type":'success', "message":f'KML file saved as {path}'})
 
 
 eel.start('main.html', cmdline_args=['--start-maximized'])    # Start
