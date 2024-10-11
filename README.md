@@ -19,7 +19,15 @@ Check Eel documantation on how to publish app:
 
 - [x] 4. Create map-based data validation tool
 
-- [ ] 5. Add logging feature
+- [x] 5. Add logging feature
 
-- [ ] 6. Polish UI/UX
+- [x] 6. Polish UI/UX
+
+- [ ] 7. Re-run of failed api call feature
+
+- [ ] 8. Support for custom EPSG
+
+- [ ] 9. Convert coordinates feature
+
+- [ ] 10. Support for more input file types
 
