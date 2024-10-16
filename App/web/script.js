@@ -27,9 +27,9 @@ $(function () {
             $('#btn_map').prop('disabled', false);
             $('#btn_export').prop('disabled', false);
             $('#btn_height').removeClass('btn-outline-secondary').addClass('btn-secondary');
-            $('#btn_kml').removeClass('btn-outline-secondary').addClass('btn-secondary');
             $('#btn_map').removeClass('btn-outline-secondary').addClass('btn-secondary');
-            $('#btn_export').removeClass('btn-outline-secondary').addClass('btn-secondary');
+            $('#btn_kml').removeClass('btn-outline-success').addClass('btn-success');
+            $('#btn_export').removeClass('btn-outline-success').addClass('btn-success');
             $('#btn_map').click();
             eel.log({ "type":"info","message":'If map shows wierd points position, try changing CRS.'})
         }).catch((result) => {
@@ -50,7 +50,7 @@ $(function () {
     });
 
     $("#btn_height").click(function () {
-        $("#btn_height").prop('disabled', true).empty().append('<span class="spinner-border spinner-border-sm"></span><span role="status">Fetching...</span>');
+        $("#btn_height").prop('disabled', true).empty().append('<span class="spinner-border spinner-border-sm"></span><span role="status"> Fetching...</span>');
         let input_crs = $("#coordinate-select").val();
         eel.addHeightToDataFrame(input_crs)().then((result) => {
             $('#display').empty().append(result);

@@ -104,7 +104,7 @@ def saveDataFrameToExcel():
     path = getOutputFilePath('.xlsx')
     if path:
         pointData.to_excel(path, index=False)
-        log({"type":'success', "message":f'Excel file saved as {path}'})
+        log({"type":'success', "message":f'Excel file saved at {path}'})
 
 
 @eel.expose
@@ -186,7 +186,7 @@ def saveDataFrameToKML(input_crs):
     path = getOutputFilePath('.kml')
     if path:
         kml.save(path)
-        log({"type":'success', "message":f'KML file saved as {path}'})
+        log({"type":'success', "message":f'KML file saved at {path}'})
 
 
 eel.start('main.html', cmdline_args=['--start-maximized'])    # Start

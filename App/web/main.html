@@ -2,16 +2,22 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css"
-        integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- JQUERY -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
+
+
     <!-- Include eel.js - note this file doesn't exist in the 'web' directory -->
     <script type="text/javascript" src="/eel.js"></script>
     <script type="text/javascript" src="script.js"></script>
 
 
+    <!-- LEAFLET-->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -22,42 +28,39 @@
 </head>
 
 <body>
-    <div class="row px-md-4 py-md-4">
-        <div class="col-6">
 
+    <div class="row px-md-4 py-md-4">
+
+        <div class="col-xl-6">
 
             <div class="input-group mb-3">
                 <button class="btn btn-success btn-sm" type="button" id="btn_start">Select File</button>
                 <input type="text" class="form-control" placeholder="" id="file" disabled>
             </div>
 
+            <div class="hstack gap-3">
 
+                <label for="sheet">Sheet:</label>
+                <span id="sheet"></span>
+                <label for="name">Name:</label>
+                <span id="name"> </span>
+                <label for="inpX">X:</label>
+                <span id="inpX"> </span>
+                <label for="inpY">Y:</label>
+                <span id="inpY" class="me-auto"> </span>
 
-            <div class="row">
-                <div class="col-md-3"> <label for="sheet">Sheet:</label>
-                    <span id="sheet"></span>
-                </div>
+                <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
 
-                <div class="col-md-3"> <label for="name">Name:</label>
-                    <span id="name"> </span>
-                </div>
-
-                <div class="col-md-2"> <label for="inpX">X:</label>
-                    <span id="inpX"> </span>
-                </div>
-
-                <div class="col-md-2"> <label for="inpY">Y:</label>
-                    <span id="inpY"> </span>
-                </div>
-                <div class="col-md-2">
-                    <button id="btn_data" class="btn btn-outline-secondary btn-sm" disabled>Get Dataset</button>
-                </div>
             </div>
 
-            <div class="row">
-                <div class="col-5">
-                    <label for="coordinate-select">CRS:</label>
-                    <select name="coordinate" id="coordinate-select">
+            <hr>
+
+            <div class="hstack gap-3">
+
+                <label for="coordinate-select">CRS:</label>
+
+                <div class="btn-group me-auto" role="group">
+                    <select name="coordinate" id="coordinate-select" class="dropdown-toggle">
                         <option value="2176">2000 strefa 5 (EPSG:2176)</option>
                         <option value="2177">2000 strefa 6 (EPSG:2177)</option>
                         <option value="2178">2000 strefa 7 (EPSG:2178)</option>
@@ -68,37 +71,43 @@
                         <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
                         <option value="4258">ETRS89 (EPSG:4258)</option>
                     </select>
-                </div>
-                <div class="col-2">
+
+
                     <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
                             Height</span></button>
-                    <label id="progress" for="btn_height"></label>
+
                 </div>
-                <div class="col-2">
-                    <button id="btn_map" class="btn btn-outline-secondary btn-sm" disabled>Update Map</button>
+                <label id="progress" for="btn_height"></label>
+
+                <div class="vr"></div>
+                <label for="btn_group">Export:</label>
+                <div class="btn-group">
+                    <button id="btn_export" class="btn btn-outline-success btn-sm" disabled>Excel</button>
+                    <button id="btn_kml" class="btn btn-outline-success btn-sm" disabled>KML</button>
                 </div>
-                <div class="col-3">
-                    <label for="btn_export">Export:</label>
-                    <div class="btn-group">
-                        <button id="btn_export" class="btn btn-outline-secondary btn-sm" disabled>Excel</button>
-                        <button id="btn_kml" class="btn btn-outline-secondary btn-sm" disabled>KML</button>
-                    </div>
-                </div>
+
             </div>
 
+            <hr>
 
             <span id='display'></span>
 
         </div>
 
-        <div class="col-lg-6">
 
+        <div class="col-xl-6">
             <div id="map" class="container"></div>
             <script type="text/javascript" src="map.js"></script>
             <ul class="list-group list-group" id="logging-list"></ul>
         </div>
     </div>
-    </div>
+
+    <button id="btn_map" class="btn btn-outline-secondary btn-sm position-fixed bottom-0 end-0 mb-3 me-3"
+        disabled>Update Map</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
