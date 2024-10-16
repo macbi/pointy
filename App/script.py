@@ -162,6 +162,8 @@ def showPointsOnMap(input_crs):
 def dataFrameToKml(input_crs):
     kml = simplekml.Kml()
     for index, row in pointData.iterrows():
+        height = row.get('Height')
+        
         #check if x and y are numbers
         try:
             X = float(row['X'])
@@ -171,12 +173,19 @@ def dataFrameToKml(input_crs):
             log({"type":'error', "message":'Displaying points on map error: X and Y must be numbers'})
             continue
         x, y = transformCoordinates(X,Y,input_crs,4326)
-        print(f'x: {x}, y: {y}, Name: {row["Name"]}')
-        point = kml.newpoint(name=row['Name'], coords=[(y,x)])
-        
-        height = row.get('Height')
+
         if height:
-            point.description = f'{height} m ASL'
+            try:
+                z = float(height)
+                point = kml.newpoint(name=row['Name'], coords=[(y,x,z)])
+                point.description = f'{height} m ASL'
+            except ValueError:
+                log({"type":'warning', "message": f'{row["Name"]} height was not a number - omitting Z value'})
+                point = kml.newpoint(name=row['Name'], coords=[(y,x)])
+        else:
+            print(f'x: {x}, y: {y}, Name: {row["Name"]}')
+            point = kml.newpoint(name=row['Name'], coords=[(y,x)])
+            
     return kml
 
 @eel.expose
