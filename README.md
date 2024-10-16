@@ -27,9 +27,13 @@ Check Eel documantation on how to publish app:
 
 - [ ] 8. Add logo and fix favicon
 
-- [ ] 9. Support for custom EPSG
+- [ ] 9. Do proper QA for various excel inputs
 
-- [ ] 10. Convert coordinates feature
+- [ ] 10. Release v0.1.0
 
-- [ ] 11. Support for more input file types
+- [ ] 11. Support for custom EPSG
+
+- [ ] 12. Convert coordinates feature
+
+- [ ] 13. Support for more input file types
 
