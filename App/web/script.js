@@ -88,7 +88,7 @@ $(function () {
             return;
         }
         
-        $('#file').val( $('#file').val() + file );
+        $('#file').val(file);
 
         eel.log({ "type":"","message":'File selected. Please choose sheet and columns.'})
 
