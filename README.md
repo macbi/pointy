@@ -25,9 +25,11 @@ Check Eel documantation on how to publish app:
 
 - [ ] 7. Re-run of failed api call feature
 
-- [ ] 8. Support for custom EPSG
+- [ ] 8. Add logo and fix favicon
 
-- [ ] 9. Convert coordinates feature
+- [ ] 9. Support for custom EPSG
 
-- [ ] 10. Support for more input file types
+- [ ] 10. Convert coordinates feature
+
+- [ ] 11. Support for more input file types
 
