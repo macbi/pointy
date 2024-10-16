@@ -55,6 +55,7 @@ $(function () {
         eel.addHeightToDataFrame(input_crs)().then((result) => {
             $('#display').empty().append(result);
             $("#btn_height").prop('disabled', false).empty().append('<span role="status">Get Height</span>');
+            $('#btn_map').click();
         }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);

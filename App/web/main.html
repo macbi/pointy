@@ -96,15 +96,23 @@
 
 
         <div class="col-xl-6">
-            <div id="map" class="container"></div>
-            <script type="text/javascript" src="map.js"></script>
-            <ul class="list-group list-group" id="logging-list"></ul>
+            <div id="map" class="container position-relative">
+                <button id="btn_map" style="z-index: 3000"
+                    class="btn btn-light btn-sm position-absolute bottom-0 start-0" disabled><svg
+                        xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                        <path
+                            d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+                        <path fill-rule="evenodd"
+                            d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+                    </svg></button>
+            </div>
+
+            <ul class="list-group" id="logging-list"></ul>
         </div>
     </div>
 
-    <button id="btn_map" class="btn btn-outline-secondary btn-sm position-fixed bottom-0 end-0 mb-3 me-3"
-        disabled>Update Map</button>
-
+    <script type="text/javascript" src="map.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
