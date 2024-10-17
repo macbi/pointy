@@ -51,7 +51,7 @@ def getPointHeight(name,X,Y,input_crs):
         y = X 
     
     # wait to avoid server error
-    time.sleep(0.5)
+    time.sleep(0.1)
 
     response = requests.get(f'https://services.gugik.gov.pl/nmt/?request=GetHByXY&x={x}&y={y}')
     print(response.status_code)
@@ -73,7 +73,7 @@ def addHeightToDataFrame(input_crs):
         pointData.at[index, 'Height'] = height
         updateProgress(f"{(index+1)}/{len(pointData)}")
     if errorNumber > 0:
-        log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error'})
+        log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error', "actionId": "btn_addMissingHeights"})
     else:
         log({"type":'success', "message":f'Heights added to all points'})
     return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
@@ -81,6 +81,24 @@ def addHeightToDataFrame(input_crs):
 
 def updateProgress(progress):
     eel.updateProgress(progress)
+    
+@eel.expose
+def addMissingHeights(input_crs):
+    global pointData
+    errordedPointsNumber = len(pointData[pointData['Height']=='server error'])
+    errorNumber = 0
+    for index, row in pointData.iterrows():
+        if row['Height']=='server error':
+            height = getPointHeight(row['Name'],row['X'],row['Y'],input_crs)
+            if height == 'server error':
+                errorNumber += 1
+            pointData.at[index, 'Height'] = height
+            updateProgress(f"{(index+1)}/{errordedPointsNumber}")
+    if errorNumber > 0:
+        log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error', "actionId": "btn_addMissingHeights"})
+    else:
+        log({"type":'success', "message":f'Heights added to all missing points'})
+    return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">')
 
 ## File path handling
 
@@ -103,8 +121,11 @@ def getOutputFilePath(extension):
 def saveDataFrameToExcel():
     path = getOutputFilePath('.xlsx')
     if path:
-        pointData.to_excel(path, index=False)
-        log({"type":'success', "message":f'Excel file saved at {path}'})
+        try:
+            pointData.to_excel(path, index=False)
+            log({"type":'success', "message":f'Excel file saved at {path}'})
+        except Exception as e:
+            log({"type":'error', "message":f'Error saving Excel file: {e}'})
 
 
 @eel.expose
@@ -114,7 +135,12 @@ def getExcelSheetNames(path):
 
 @eel.expose
 def getHTMLTable(path, sheet_name, headers):
-    df = pd.read_excel(path, sheet_name)
+    try:
+        df = pd.read_excel(path, sheet_name)
+    except Exception as e:
+        log({"type":'error', "message":f'Error loading Excel file: {e}'})
+        return
+    
     df = df[headers]
     # update headers names to number, X and Y
     df.columns = ['Name', 'X', 'Y']
@@ -194,8 +220,11 @@ def saveDataFrameToKML(input_crs):
     kml.document.name = fileName.split('.')[0]
     path = getOutputFilePath('.kml')
     if path:
-        kml.save(path)
-        log({"type":'success', "message":f'KML file saved at {path}'})
+        try:
+            kml.save(path)
+            log({"type":'success', "message":f'KML file saved at {path}'})
+        except Exception as e:
+            log({"type":'error', "message":f'Error saving KML file: {e}'})
 
 
 eel.start('main.html', cmdline_args=['--start-maximized'])    # Start

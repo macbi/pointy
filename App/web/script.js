@@ -31,7 +31,7 @@ $(function () {
             $('#btn_kml').removeClass('btn-outline-success').addClass('btn-success');
             $('#btn_export').removeClass('btn-outline-success').addClass('btn-success');
             $('#btn_map').click();
-            eel.log({ "type":"info","message":'If map shows wierd points position, try changing CRS.'})
+            eel.log({ "type": "info", "message": 'If map shows wierd points position, try changing CRS.' })
         }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);
@@ -64,7 +64,7 @@ $(function () {
 
     $("#btn_map").click(function () {
         let input_crs = $("#coordinate-select").val();
-        eel.showPointsOnMap(input_crs)().then((result) => {  }).catch((result) => {
+        eel.showPointsOnMap(input_crs)().then((result) => { }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);
         });
@@ -83,22 +83,32 @@ $(function () {
     }
 
     function getPathToData() {
-    eel.getFilePath()((file) => {
-        if (file === "") {
-            return;
-        }
-        
-        $('#file').val(file);
+        eel.getFilePath()((file) => {
+            if (file === "") {
+                return;
+            }
 
-        eel.log({ "type":"","message":'File selected. Please choose sheet and columns.'})
+            $('#file').val(file);
 
-        eel.getExcelSheetNames(file)((result) => {
-            console.log(result);
-            $('#sheet').empty().append(buildSelect("sheet_slct", result).on('change', function () {
-                // refresh name, x, y selects
-                let selectedSheet = $(this).val();
-                console.log(selectedSheet); 
-                console.log(file);
+            eel.log({ "type": "", "message": 'File selected. Please choose sheet and columns.' })
+
+            eel.getExcelSheetNames(file)((result) => {
+                console.log(result);
+                $('#sheet').empty().append(buildSelect("sheet_slct", result).on('change', function () {
+                    // refresh name, x, y selects
+                    let selectedSheet = $(this).val();
+                    console.log(selectedSheet);
+                    console.log(file);
+
+                    eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
+                        console.log(result);
+                        $('#name').empty().append(buildSelect("name_slct", result, 0));
+                        $('#inpX').empty().append(buildSelect("x_slct", result, 1));
+                        $('#inpY').empty().append(buildSelect("y_slct", result, 2));
+                    })
+                }));
+
+                let selectedSheet = $('#sheet_slct')[0].value;
 
                 eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
                     console.log(result);
@@ -106,81 +116,94 @@ $(function () {
                     $('#inpX').empty().append(buildSelect("x_slct", result, 1));
                     $('#inpY').empty().append(buildSelect("y_slct", result, 2));
                 })
-            }));
-
-            let selectedSheet = $('#sheet_slct')[0].value;
-
-            eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
-                console.log(result);
-                $('#name').empty().append(buildSelect("name_slct", result, 0));
-                $('#inpX').empty().append(buildSelect("x_slct", result, 1));
-                $('#inpY').empty().append(buildSelect("y_slct", result, 2));
-            })
+            });
+            $('#btn_data').prop('disabled', false);
+            $('#btn_data').removeClass('btn-outline-secondary').addClass('btn-secondary');
+            $('#btn_start').removeClass('btn-success').addClass('btn-outline-success');
         });
-        $('#btn_data').prop('disabled', false);
-        $('#btn_data').removeClass('btn-outline-secondary').addClass('btn-secondary');
-        $('#btn_start').removeClass('btn-success').addClass('btn-outline-success');
+    }
+
+    function buildSelect(id, options, selectedValue = 0) {
+
+        var $select = $('<select id="' + id + '"></select>');
+        var $option;
+
+        for (let i = 0; i < options.length; i++) {
+            $option = $('<option value="' + options[i] + '">' + options[i] + '</option>');
+            if (i === selectedValue) {
+                $option.attr('selected', true);
+            }
+            $select.append($option);
+        }
+
+        return $select;
+    }
+
+    function buildList(items) {
+        var $list = $('<ul class="list-group""></ul>');
+        var $item;
+
+        for (let i = 0; i < items.length; i++) {
+            switch (items[i].type) {
+                case 'success':
+                    color = 'success';
+                    itemPrefix = '<li class="list-group-item list-group-item-success">';
+                    break;
+                case 'error':
+                    color = 'danger';
+                    itemPrefix = '<li class="list-group-item list-group-item-danger">';
+                    break;
+                case 'warning':
+                    color = 'warning';
+                    itemPrefix = '<li class="list-group-item list-group-item-warning">';
+                    break;
+                case 'info':
+                    color = 'info';
+                    break;
+                default:
+                    color = 'light';
+            }
+
+            let button = '';
+            if (items[i].actionId) {
+                console.log(items[i].actionId);
+                button = `<button type="button" class="btn btn-${color} btn-sm" id="${items[i].actionId}">Rerun</button>`;
+            }
+
+            $item = $(`<li class="list-group-item list-group-item-${color}"><div class="hstack gap-3"><div class="me-auto">` + items[i].message + '</div>' + button + '</div></li>');
+            $list.append($item);
+        }
+
+        return $list;
+    }
+
+    function updateList(id, items) {
+        $('#' + id).empty().append(buildList(items));
+    }
+
+    $("#coordinate-select").change(function () {
+        crsName = $("#coordinate-select option:selected").text();
+        $('#btn_map').click();
+        eel.log({ "type": "warning", "message": `You selected ${crsName} CRS. It will be used for all operations now.` });
     });
-}
 
-function buildSelect(id, options, selectedValue = 0) {
-
-    var $select = $('<select id="' + id + '"></select>');
-    var $option;
-
-    for (let i = 0; i < options.length; i++) {
-        $option = $('<option value="' + options[i] + '">' + options[i] + '</option>');
-        if (i === selectedValue) {
-            $option.attr('selected', true);
-        }
-        $select.append($option);
-    }
-
-    return $select;
-}
-
-function buildList(items) {
-    var $list = $('<ul class="list-group""></ul>');
-    var $item;
-
-    for (let i = 0; i < items.length; i++) {
-        switch(items[i].type) {
-            case 'success':
-                itemPrefix = '<li class="list-group-item list-group-item-success">';
-                break;
-            case 'error':
-                itemPrefix = '<li class="list-group-item list-group-item-danger">';
-                break;
-            case 'warning':
-                itemPrefix = '<li class="list-group-item list-group-item-warning">';
-                break;
-            case 'info':
-                itemPrefix = '<li class="list-group-item list-group-item-info">';
-                break;
-            default:
-                itemPrefix = '<li class="list-group-item list-group-item-light">';
-        }
-
-        $item = $(itemPrefix + items[i].message + '</li>');
-        $list.append($item);
-    }
-
-    return $list;
-}
-
-function updateList(id, items) {
-    $('#' + id).empty().append(buildList(items));
-}
-
-$("#coordinate-select").change(function () {
-    crsName = $("#coordinate-select option:selected").text();
-   eel.log({"type":"warning","message": `You selected ${crsName} CRS. It will be used for all operations now.`});
-});
+    $(document).on('click', '#btn_addMissingHeights', function () {
+        console.log("Clicked");
+        let input_crs = $("#coordinate-select").val();
+        eel.addMissingHeights(input_crs)().then((result) => {
+            console.log(result);
+            $('#display').empty().append(result);
+            $('#btn_map').click();
+        }).catch((result) => {
+            console.log("This is the repr(e) for an exception " + result.errorText);
+            console.log("This is the full traceback:\n" + result.errorTraceback);
+        });
+    });
 
 
-eel.expose(updateProgress);
-eel.expose(updateList);
+    eel.expose(updateProgress);
+    eel.expose(updateList);
 
-eel.log({ "type":"","message":'App started. Please load Excel file.'})
+    eel.log({ "type": "", "message": 'App started. Please load Excel file.'})
 
 }); 
