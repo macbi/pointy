@@ -23,9 +23,9 @@ Check Eel documantation on how to publish app:
 
 - [x] 6. Polish UI/UX
 
-- [ ] 7. Re-run of failed api call feature
+- [x] 7. Re-run of failed api call feature
 
-- [ ] 8. Add logo and fix favicon
+- [x] 8. Add logo and fix favicon
 
 - [ ] 9. Do proper QA for various excel inputs
 
