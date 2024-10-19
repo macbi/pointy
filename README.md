@@ -27,7 +27,7 @@ Check Eel documantation on how to publish app:
 
 - [x] 8. Add logo and fix favicon
 
-- [ ] 9. Do proper QA for various excel inputs
+- [x] 9. Do proper QA for various excel inputs
 
 - [ ] 10. Release v0.1.0
 
