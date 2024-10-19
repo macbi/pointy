@@ -29,7 +29,7 @@ Check Eel documantation on how to publish app:
 
 - [x] 9. Do proper QA for various excel inputs
 
-- [ ] 10. Release v0.1.0
+- [x] 10. Release v0.1.0
 
 - [ ] 11. Support for custom EPSG
 
