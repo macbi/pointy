@@ -144,6 +144,12 @@ def getHTMLTable(path, sheet_name, headers):
     df = df[headers]
     # update headers names to number, X and Y
     df.columns = ['Name', 'X', 'Y']
+    # validate if X and Y columns have values
+    if df['X'].isnull().values.any() or df['Y'].isnull().values.any():
+        log({"type":'error', "message":'X and Y columns must have values'})
+        #insert "no data" to empty cells, those cells will be omitted in map and calculations
+        df['X'].fillna('no data', inplace=True)
+        df['Y'].fillna('no data', inplace=True)                
     global pointData
     pointData = df
     log({"type":'info', "message":f'Excel file loaded: {len(pointData)} points'})
