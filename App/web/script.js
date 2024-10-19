@@ -179,7 +179,7 @@ $(function () {
                     break;
                 default:
                     color = 'light';
-                    icon = `<img src="pointy_logo.svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">`;
+                    icon = `<img src="pointy_logo_grey.svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">`;
             }
 
             let button = '';
