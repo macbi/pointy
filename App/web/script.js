@@ -218,6 +218,18 @@ $(function () {
         });
     });
 
+    $("#pointy_logo").click(function () {
+        $("#helpModal").modal('show');
+    });
+
+
+    $("#helpModal").modal({ show: false});
+
+    $(document).on('click', '#btn_modal_repeat', function () {
+        let img = $('#img_cat');
+        let newSrc = 'https://cataas.com/cat?width=300&height=300&timestamp=' + new Date().getTime();
+        img.attr('src', newSrc);
+    });
 
     eel.expose(updateProgress);
     eel.expose(updateList);
