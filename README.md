@@ -4,10 +4,25 @@ Simple tool for GIS point-data manipulation build with Python and HTML/JS
 ## How to run 
 
 In app root directory, run in terminal:
-`python script.py`
+`python Pointy.py `
 
-Check Eel documantation on how to publish app:
+## How to publish (Windows)
+
+Eel documantation on how to publish app:
 [Eel Documantation](https://github.com/python-eel/Eel/tree/main?tab=readme-ov-file#starting-the-app)
+
+1. Create virtual environment
+   `python -m venv ./venv` (you can specify different path of it)
+
+2. Install dependecies from `requirements.txt` file
+    `pip install -r  requirements.txt`
+    and PyInstaller
+    `pip install PyInstaller`
+3. Build app with PyInstaller
+    `python -m eel Pointy.py web`
+    If you are happy with results, you can build final app with additional flags
+    `python -m eel Pointy.py web --onefile --noconsole --icon web/favicon.ico`
+
 
 ## Roadmap
 
@@ -31,9 +46,9 @@ Check Eel documantation on how to publish app:
 
 - [x] 10. Release v0.1.0
 
-- [ ] 11. Support for custom EPSG
+- [ ] 11. Convert coordinates feature
 
-- [ ] 12. Convert coordinates feature
+- [ ] 12. Support for custom EPSG
 
 - [ ] 13. Support for more input file types
 
