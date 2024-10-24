@@ -13,6 +13,9 @@ Eel documantation on how to publish app:
 
 1. Create virtual environment
    `python -m venv ./venv` (you can specify different path of it)
+   activate it
+   `cd venv/Scripts`
+   `./activate`
 
 2. Install dependecies from `requirements.txt` file
     `pip install -r  requirements.txt`
