@@ -87,13 +87,15 @@ def addMissingHeights(input_crs):
     global pointData
     errordedPointsNumber = len(pointData[pointData['Height']=='server error'])
     errorNumber = 0
+    doneNumber = 0
     for index, row in pointData.iterrows():
         if row['Height']=='server error':
             height = getPointHeight(row['Name'],row['X'],row['Y'],input_crs)
             if height == 'server error':
                 errorNumber += 1
             pointData.at[index, 'Height'] = height
-            updateProgress(f"{(index+1)}/{errordedPointsNumber}")
+            doneNumber += 1
+            updateProgress(f"{(doneNumber)}/{errordedPointsNumber}")
     if errorNumber > 0:
         log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error', "actionId": "btn_addMissingHeights"})
     else:
@@ -153,7 +155,7 @@ def getHTMLTable(path, sheet_name, headers):
     global pointData
     pointData = df
     log({"type":'info', "message":f'Excel file loaded: {len(pointData)} points'})
-    return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
+    return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table id="table" class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
 @eel.expose
 def getExcelSheetHeaders(path, sheet_name):

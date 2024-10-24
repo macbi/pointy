@@ -41,6 +41,14 @@ $(function () {
     });
 
     $("#btn_export").click(function () {
+        
+        input_crs = $("#coordinate-select").val();
+        output_crs = $("#output-coordinate-select").val();
+
+        if (input_crs !== output_crs) {
+            //TODO: Add export with output CRS
+        }
+
         eel.saveDataFrameToExcel()().then((result) => {
 
         }).catch((result) => {
@@ -188,7 +196,7 @@ $(function () {
                 button = `<button type="button" class="btn btn-${color} btn-sm" id="${items[i].actionId}">Rerun</button>`;
             }
 
-            $item = $(`<li class="list-group-item list-group-item-${color}"><div class="hstack gap-3">`+ icon +`<div class="me-auto">` + items[i].message + '</div>' + button + '</div></li>');
+            $item = $(`<li class="list-group-item list-group-item-${color}"><div class="hstack gap-3">` + icon + `<div class="me-auto">` + items[i].message + '</div>' + button + '</div></li>');
             $list.append($item);
         }
 
@@ -201,8 +209,13 @@ $(function () {
 
     $("#coordinate-select").change(function () {
         crsName = $("#coordinate-select option:selected").text();
-        $('#btn_map').click();
+        crsValue = $("#coordinate-select option:selected").val();
         eel.log({ "type": "warning", "message": `You selected ${crsName} CRS. It will be used for all operations now.` });
+
+        if ($('#table').length) {
+            $('#btn_map').click();
+        }
+        $('#output-coordinate-select').val(crsValue).change();
     });
 
     $(document).on('click', '#btn_addMissingHeights', function () {
@@ -223,7 +236,7 @@ $(function () {
     });
 
 
-    $("#helpModal").modal({ show: false});
+    $("#helpModal").modal({ show: false });
 
     $(document).on('click', '#btn_modal_repeat', function () {
         let img = $('#img_cat');
@@ -234,6 +247,6 @@ $(function () {
     eel.expose(updateProgress);
     eel.expose(updateList);
 
-    eel.log({ "type": "", "message": 'App started. Please load Excel file.'})
+    eel.log({ "type": "", "message": 'App started. Please load Excel file.' })
 
 }); 
