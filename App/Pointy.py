@@ -64,6 +64,9 @@ def getPointHeight(name,X,Y,input_crs):
 
 @eel.expose
 def addHeightToDataFrame(input_crs):
+    global fileName
+    fileName = fileName.split('.')[0] + '_heights'
+    
     global pointData
     errorNumber = 0
     for index, row in pointData.iterrows():
@@ -115,9 +118,37 @@ def getFilePath():
     
 def getOutputFilePath(extension):
 
-    return filedialog.asksaveasfilename(defaultextension=extension, initialfile = f"{fileName.split('.')[0]}_results", filetypes=[("All Files","*.*")])
+    return filedialog.asksaveasfilename(defaultextension=extension, initialfile = fileName.split('.')[0], filetypes=[("All Files","*.*")])
     
 ## Data frame handling
+
+@eel.expose
+def saveDataFrameWithTransformedCoordinates(input_crs, output_crs):
+    global fileName
+    fileName = fileName.split('.')[0] + f'_to_{output_crs}'
+    path = getOutputFilePath('.xlsx')
+
+    transformedPointData = pointData.copy()
+    if path:
+        try:
+            for index, row in pointData.iterrows():
+                #check if x and y are numbers
+                try:
+                    X = float(row['X'])
+                    Y = float(row['Y'])
+                    Y, X = transformCoordinates(X,Y,input_crs,output_crs)
+                    #overwrite X and Y with transformed values
+                    transformedPointData.at[index, 'X'] = X
+                    transformedPointData.at[index, 'Y'] = Y
+                except ValueError:
+                    continue
+                
+            #add name of new crs to x y columns
+            transformedPointData.rename(columns={'X': f'X_{output_crs}', 'Y': f'Y_{output_crs}'}, inplace=True)    
+            transformedPointData.to_excel(path, index=False)
+            log({"type":'success', "message":f'Excel file saved at {path}'})
+        except Exception as e:
+            log({"type":'error', "message":f'Error saving Excel file: {e}'})
 
 @eel.expose
 def saveDataFrameToExcel():
@@ -154,7 +185,7 @@ def getHTMLTable(path, sheet_name, headers):
         df['Y'].fillna('no data', inplace=True)                
     global pointData
     pointData = df
-    log({"type":'info', "message":f'Excel file loaded: {len(pointData)} points'})
+    log({"message":f'Excel file loaded: {len(pointData)} points'})
     return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table id="table" class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
 @eel.expose

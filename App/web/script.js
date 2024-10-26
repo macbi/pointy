@@ -44,9 +44,15 @@ $(function () {
         
         input_crs = $("#coordinate-select").val();
         output_crs = $("#output-coordinate-select").val();
+        eel.log({ "type": "info", "message": `Exporting data ${input_crs} with ${output_crs} CRS.` });
 
         if (input_crs !== output_crs) {
-            //TODO: Add export with output CRS
+            eel.saveDataFrameWithTransformedCoordinates(input_crs, output_crs)().then((result) => {
+            }).catch((result) => {
+                console.log("This is the repr(e) for an exception " + result.errorText);
+                console.log("This is the full traceback:\n" + result.errorTraceback);
+            });
+            return;
         }
 
         eel.saveDataFrameToExcel()().then((result) => {
