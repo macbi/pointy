@@ -79,8 +79,7 @@ def addHeightToDataFrame(input_crs):
         log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error', "actionId": "btn_addMissingHeights"})
     else:
         log({"type":'success', "message":f'Heights added to all points'})
-    return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">') # use bootstrap styling
-
+    return getHTMLTable(pointData)
 
 def updateProgress(progress):
     eel.updateProgress(progress)
@@ -103,7 +102,7 @@ def addMissingHeights(input_crs):
         log({"type":'warning', "message":f'{errorNumber} point{"s" if (errorNumber > 1) else ""} with server error', "actionId": "btn_addMissingHeights"})
     else:
         log({"type":'success', "message":f'Heights added to all missing points'})
-    return pointData.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table class="table table-striped table-bordered table-sm">')
+    return getHTMLTable(pointData)
 
 ## File path handling
 
@@ -125,6 +124,7 @@ def getOutputFilePath(extension):
 @eel.expose
 def saveDataFrameWithTransformedCoordinates(input_crs, output_crs):
     global fileName
+    oldFileName = fileName
     fileName = fileName.split('.')[0] + f'_to_{output_crs}'
     path = getOutputFilePath('.xlsx')
 
@@ -149,6 +149,7 @@ def saveDataFrameWithTransformedCoordinates(input_crs, output_crs):
             log({"type":'success', "message":f'Excel file saved at {path}'})
         except Exception as e:
             log({"type":'error', "message":f'Error saving Excel file: {e}'})
+    fileName = oldFileName
 
 @eel.expose
 def saveDataFrameToExcel():
@@ -167,7 +168,7 @@ def getExcelSheetNames(path):
     return xl.sheet_names
 
 @eel.expose
-def getHTMLTable(path, sheet_name, headers):
+def createIntialTable(path, sheet_name, headers):
     try:
         df = pd.read_excel(path, sheet_name)
     except Exception as e:
@@ -186,6 +187,9 @@ def getHTMLTable(path, sheet_name, headers):
     global pointData
     pointData = df
     log({"message":f'Excel file loaded: {len(pointData)} points'})
+    return getHTMLTable(pointData)
+
+def getHTMLTable(df):
     return df.to_html(index=False, justify="left").replace('<table border="1" class="dataframe">','<table id="table" class="table table-striped table-bordered table-sm">') # use bootstrap styling
 
 @eel.expose

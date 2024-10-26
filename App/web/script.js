@@ -18,7 +18,7 @@ $(function () {
         let sheet = $("#sheet_slct").val();
         let file = $("#file").val();
         console.log(x, y, name, sheet, file);
-        eel.getHTMLTable(file, sheet, [name, x, y])().then((result) => {
+        eel.createIntialTable(file, sheet, [name, x, y])().then((result) => {
             $('#progress').empty();
             $('#display').empty().append(result);
             $('#btn_data').removeClass('btn-secondary').addClass('btn-outline-secondary');
@@ -44,7 +44,6 @@ $(function () {
         
         input_crs = $("#coordinate-select").val();
         output_crs = $("#output-coordinate-select").val();
-        eel.log({ "type": "info", "message": `Exporting data ${input_crs} with ${output_crs} CRS.` });
 
         if (input_crs !== output_crs) {
             eel.saveDataFrameWithTransformedCoordinates(input_crs, output_crs)().then((result) => {
