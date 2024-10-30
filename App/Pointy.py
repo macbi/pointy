@@ -16,6 +16,7 @@ eel.init('web')                     # Give folder containing web files
 pointData = pd.DataFrame()
 loggingList = []
 fileName = ""
+filePath = ""
 
 @eel.expose
 def log(message):
@@ -64,6 +65,7 @@ def getPointHeight(name,X,Y,input_crs):
 
 @eel.expose
 def addHeightToDataFrame(input_crs):
+    # TODO: fix adding multiple "_heights" to file name, when you don't change sheet
     global fileName
     fileName = fileName.split('.')[0] + '_heights'
     
@@ -109,9 +111,12 @@ def addMissingHeights(input_crs):
 @eel.expose
 def getFilePath(): 
 
-    filePath = filedialog.askopenfilename(filetypes=[('Excel files', '*.xlsx')])
+    path = filedialog.askopenfilename(filetypes=[('Excel files', '*.xlsx')])
+    global filePath
+    filePath = path
+    
     global fileName
-    fileName = filePath.split('/')[-1] 
+    fileName = path.split('/')[-1]
 
     return filePath
     
@@ -180,12 +185,20 @@ def createIntialTable(path, sheet_name, headers):
     df.columns = ['Name', 'X', 'Y']
     # validate if X and Y columns have values
     if df['X'].isnull().values.any() or df['Y'].isnull().values.any():
-        log({"type":'error', "message":'X and Y columns must have values'})
+        log({"type":'error', "message":'X and Y columns must have values. Points with empty X or Y will be omitted.'})
         #insert "no data" to empty cells, those cells will be omitted in map and calculations
         df['X'].fillna('no data', inplace=True)
-        df['Y'].fillna('no data', inplace=True)                
+        df['Y'].fillna('no data', inplace=True)   
+    # validate if X and Y columns have numbers
+    if not pd.to_numeric(df['X'], errors='coerce').notnull().all() or not pd.to_numeric(df['Y'], errors='coerce').notnull().all():
+        log({"type":'error', "message":'X and Y columns must have numbers. Points with non-numeric X or Y will be omitted.'})     
     global pointData
     pointData = df
+    
+    # remove all suffixes from file name
+    global fileName, filePath
+    fileName = filePath.split('/')[-1]
+    
     log({"message":f'Excel file loaded: {len(pointData)} points'})
     return getHTMLTable(pointData)
 
@@ -211,7 +224,6 @@ def showPointsOnMap(input_crs):
             Y = float(row['Y'])
         except ValueError:
             print('X and Y must be numbers')
-            log({"type":'error', "message":'Displaying points on map error: X and Y must be numbers'})
             continue
         x, y = transformCoordinates(X,Y,input_crs,4326)
         print(f'x: {x}, y: {y}, Name: {row["Name"]}')
@@ -238,8 +250,6 @@ def dataFrameToKml(input_crs):
             X = float(row['X'])
             Y = float(row['Y'])
         except ValueError:
-            print('X and Y must be numbers')
-            log({"type":'error', "message":'Displaying points on map error: X and Y must be numbers'})
             continue
         x, y = transformCoordinates(X,Y,input_crs,4326)
 
