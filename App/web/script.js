@@ -78,9 +78,9 @@ $(function () {
     });
 
     $("#btn_export").click(function () {
-        
-        input_crs = $("#coordinate-select").val();
-        output_crs = $("#output-coordinate-select").val();
+
+        input_crs = $("#input-epsg").val();
+        output_crs = $("#output-epsg").val();
 
         if (input_crs !== output_crs) {
             eel.saveDataFrameWithTransformedCoordinates(input_crs, output_crs)().then((result) => {
@@ -101,7 +101,7 @@ $(function () {
 
     $("#btn_height").click(function () {
         $("#btn_height").prop('disabled', true).empty().append('<span class="spinner-border spinner-border-sm"></span><span role="status"> Fetching...</span>');
-        let input_crs = $("#coordinate-select").val();
+        let input_crs = $("#input-epsg").val();
         eel.addHeightToDataFrame(input_crs)().then((result) => {
             $('#display').empty().append(result);
             $("#btn_height").prop('disabled', false).empty().append('<span role="status">Get Height</span>');
@@ -113,7 +113,7 @@ $(function () {
     });
 
     $("#btn_map").click(function () {
-        let input_crs = $("#coordinate-select").val();
+        let input_crs = $("#input-epsg").val();
         eel.showPointsOnMap(input_crs)().then((result) => { }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);
@@ -121,7 +121,7 @@ $(function () {
     });
 
     $("#btn_kml").click(function () {
-        let input_crs = $("#coordinate-select").val();
+        let input_crs = $("#input-epsg").val();
         eel.saveDataFrameToKML(input_crs)().then((result) => { }).catch((result) => {
             console.log("This is the repr(e) for an exception " + result.errorText);
             console.log("This is the full traceback:\n" + result.errorTraceback);
@@ -211,17 +211,47 @@ $(function () {
     $("#coordinate-select").change(function () {
         crsName = $("#coordinate-select option:selected").text();
         crsValue = $("#coordinate-select option:selected").val();
-        eel.log({ "type": "warning", "message": `You selected ${crsName} CRS. It will be used for all operations now.` });
+        if (crsValue !== '0') {
+            $('#input-epsg').prop('disabled', true);
+            eel.log({ "type": "warning", "message": `You selected ${crsName} CRS. It will be used for all operations now.` });
+            $('#input-epsg').val(crsValue);
 
-        if ($('#table').length) {
-            $('#btn_map').click();
+            // if data is already loaded, update map
+            if ($('#table').length) {
+                $('#btn_map').click();
+            }
+            //by default set output CRS to same as input CRS
+            $('#output-coordinate-select').val(crsValue).change();
+        } else {
+            $('#input-epsg').prop('disabled', false);
+            $('#input-epsg').val('');
+            $('#input-epsg').focus();
+            eel.log({ "message": 'Please insert EPSG number of the CRS.' });
+
+            //TODO: add validation for EPSG number and handler for pyproj.exceptions.CRSError: Invalid projection: epsg:0: (Internal Proj Error: proj_create: crs not found)
+
+            // TODO: think about how to handle this better (when we know that user finished typing?)
+            $('#input-epsg').on('focusout', function () {
+                // this leads to a bug when log is called couple of times
+                crsValue = $(this).val();
+                if (crsValue !== '') {
+                    eel.log({ "type": "warning", "message": `You entered EPSG ${crsValue}. It will be used for all operations now.` });
+                    if ($('#table').length) {
+                        $('#btn_map').click();
+                    }
+                    //TODO: chenge output CRS to same as input CRS
+                }
+            });
         }
-        $('#output-coordinate-select').val(crsValue).change();
+
+
     });
+
+    //TODO: same bahavour for output CRS
 
     $(document).on('click', '#btn_addMissingHeights', function () {
         console.log("Clicked");
-        let input_crs = $("#coordinate-select").val();
+        let input_crs = $("#input-epsg").val();
         eel.addMissingHeights(input_crs)().then((result) => {
             console.log(result);
             $('#display').empty().append(result);

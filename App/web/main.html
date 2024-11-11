@@ -65,9 +65,9 @@
             <hr>
 
             <div class="hstack gap-3 mb-3">
-
-                <label class="col-2">Input CRS:</label>
-                <div class="btn-group" role="group">
+                
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text col-2">Input CRS:</label>
                     <select name="coordinate" id="coordinate-select" class="dropdown-toggle">
                         <option value="2176">2000 strefa 5 (EPSG:2176)</option>
                         <option value="2177">2000 strefa 6 (EPSG:2177)</option>
@@ -78,9 +78,10 @@
                         <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
                         <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
                         <option value="4258">ETRS89 (EPSG:4258)</option>
+                        <option value="0">Custom</option>
                     </select>
-
-
+                    <label class="input-group-text">EPSG:</label>
+                    <input type="number" class="form-control col-1" id="input-epsg" placeholder=" Input EPSG" value="2176" disabled>
                     <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
                             Height</span></button>
 
@@ -90,9 +91,8 @@
 
             <div class="hstack gap-3 mb-3">
 
-                <label class="col-2">Output CRS:</label>
-
-                <div class="btn-group" role="group">
+                <div class="input-group input-group-sm">
+                    <label class="input-group-text col-2">Output CRS:</label>
                     <select name="coordinate" id="output-coordinate-select" class="dropdown-toggle">
                         <option value="2176">2000 strefa 5 (EPSG:2176)</option>
                         <option value="2177">2000 strefa 6 (EPSG:2177)</option>
@@ -103,7 +103,10 @@
                         <option value="3034">ETRS 1989 LCC (EPSG:3034)</option>
                         <option value="3035">ETRS 1989 LAEA (EPSG:3035)</option>
                         <option value="4258">ETRS89 (EPSG:4258)</option>
+                        <option value="0">Custom</option>
                     </select>
+                    <label class="input-group-text">EPSG:</label>
+                    <input type="number" class="form-control col-1" id="output-epsg" placeholder="Output EPSG" value="2176" disabled>
                     <button id="btn_export" class="btn btn-outline-success btn-sm" disabled>Excel</button>
                 </div>
 
