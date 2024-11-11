@@ -8,7 +8,44 @@ $(function () {
     eel.handleinput("connected!");  // Call a Python function
 
     $("#btn_start").click(function () {
-        getPathToData();
+        eel.getFilePath()((file) => {
+            if (file === "") {
+                return;
+            }
+
+            $('#file').val(file);
+
+            eel.log({ "type": "", "message": 'File selected. Please choose sheet and columns.' })
+
+            eel.getExcelSheetNames(file)((result) => {
+                console.log(result);
+                $('#sheet').empty().append(buildSelect("sheet_slct", result).on('change', function () {
+                    // refresh name, x, y selects
+                    let selectedSheet = $(this).val();
+                    console.log(selectedSheet);
+                    console.log(file);
+
+                    eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
+                        console.log(result);
+                        $('#name').empty().append(buildSelect("name_slct", result, 0));
+                        $('#inpX').empty().append(buildSelect("x_slct", result, 1));
+                        $('#inpY').empty().append(buildSelect("y_slct", result, 2));
+                    })
+                }));
+
+                let selectedSheet = $('#sheet_slct')[0].value;
+
+                eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
+                    console.log(result);
+                    $('#name').empty().append(buildSelect("name_slct", result, 0));
+                    $('#inpX').empty().append(buildSelect("x_slct", result, 1));
+                    $('#inpY').empty().append(buildSelect("y_slct", result, 2));
+                })
+            });
+            $('#btn_data').prop('disabled', false);
+            $('#btn_data').removeClass('btn-outline-secondary').addClass('btn-secondary');
+            $('#btn_start').removeClass('btn-success').addClass('btn-outline-success');
+        });
     });
 
     $("#btn_data").click(function () {
@@ -93,47 +130,6 @@ $(function () {
 
     function updateProgress(progress) {
         $('#progress').text(progress);
-    }
-
-    function getPathToData() {
-        eel.getFilePath()((file) => {
-            if (file === "") {
-                return;
-            }
-
-            $('#file').val(file);
-
-            eel.log({ "type": "", "message": 'File selected. Please choose sheet and columns.' })
-
-            eel.getExcelSheetNames(file)((result) => {
-                console.log(result);
-                $('#sheet').empty().append(buildSelect("sheet_slct", result).on('change', function () {
-                    // refresh name, x, y selects
-                    let selectedSheet = $(this).val();
-                    console.log(selectedSheet);
-                    console.log(file);
-
-                    eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
-                        console.log(result);
-                        $('#name').empty().append(buildSelect("name_slct", result, 0));
-                        $('#inpX').empty().append(buildSelect("x_slct", result, 1));
-                        $('#inpY').empty().append(buildSelect("y_slct", result, 2));
-                    })
-                }));
-
-                let selectedSheet = $('#sheet_slct')[0].value;
-
-                eel.getExcelSheetHeaders(file, selectedSheet)((result) => {
-                    console.log(result);
-                    $('#name').empty().append(buildSelect("name_slct", result, 0));
-                    $('#inpX').empty().append(buildSelect("x_slct", result, 1));
-                    $('#inpY').empty().append(buildSelect("y_slct", result, 2));
-                })
-            });
-            $('#btn_data').prop('disabled', false);
-            $('#btn_data').removeClass('btn-outline-secondary').addClass('btn-secondary');
-            $('#btn_start').removeClass('btn-success').addClass('btn-outline-success');
-        });
     }
 
     function buildSelect(id, options, selectedValue = 0) {
