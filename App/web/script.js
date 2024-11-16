@@ -220,8 +220,7 @@ $(function () {
             if ($('#table').length) {
                 $('#btn_map').click();
             }
-            //by default set output CRS to same as input CRS
-            $('#output-coordinate-select').val(crsValue).change();
+
         } else {
             $('#input-epsg').prop('disabled', false);
             $('#input-epsg').val('');
@@ -234,6 +233,8 @@ $(function () {
             $('#input-epsg').on('focusout', function () {
                 // this leads to a bug when log is called couple of times
                 crsValue = $(this).val();
+                $('#output-epsg').val(crsValue).change();
+
                 if (crsValue !== '') {
                     eel.log({ "type": "warning", "message": `You entered EPSG ${crsValue}. It will be used for all operations now.` });
                     if ($('#table').length) {
@@ -243,11 +244,27 @@ $(function () {
                 }
             });
         }
+        //by default set output CRS to same as input CRS
+        $('#output-coordinate-select').val(crsValue).change();
+    });
+
+    $("#coordinate-select").change(function () {
+        crsName = $("#coordinate-select option:selected").text();
+        crsValue = $("#coordinate-select option:selected").val();
+        if (crsValue !== '0') {
+            $('#output-epsg').prop('disabled', true);
+            $('#output-epsg').val(crsValue);
+
+        } else {
+            $('#output-epsg').prop('disabled', false);
+            $('#output-epsg').val('');
+
+            //TODO: add validation for EPSG number and handler for pyproj.exceptions.CRSError: Invalid projection: epsg:0: (Internal Proj Error: proj_create: crs not found)
+
+        }
 
 
     });
-
-    //TODO: same bahavour for output CRS
 
     $(document).on('click', '#btn_addMissingHeights', function () {
         console.log("Clicked");
