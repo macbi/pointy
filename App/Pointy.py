@@ -1,6 +1,6 @@
 import time
 import eel
-from pyproj import Transformer
+from pyproj import Transformer, CRS, exceptions
 import requests
 import pandas as pd
 from tkinter import Tk
@@ -28,6 +28,25 @@ def handleinput(x):
     print('%s' % x)
 
 eel.say_hello_js('connected!')   # Call a Javascript function
+
+@eel.expose
+def validateEPSG(epsg):
+    print(f'EPSG: {epsg}')
+    try:
+        epsg = int(epsg)
+    except ValueError:
+        print('EPSG must be a number')
+        return False
+    if epsg < 2000 or epsg > 10000:
+        print('EPSG must be between 2000 and 10000')
+        return False
+    try:
+        CRS.from_epsg(epsg)
+        return True
+    except exceptions.CRSError:
+        print('EPSG not found')
+        return False
+
 
 def transformCoordinates(X,Y,input_crs,output_crs):
     transfomer = Transformer.from_crs(f'epsg:{input_crs}', f'epsg:{output_crs}')

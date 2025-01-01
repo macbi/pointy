@@ -59,10 +59,13 @@ $(function () {
             $('#progress').empty();
             $('#display').empty().append(result);
             $('#btn_data').removeClass('btn-secondary').addClass('btn-outline-secondary');
+            if ($('#output-epsg').val() !== '') {
+                enableExportButtons();
+            }
+            if($('#input-epsg').val() !== '') {
             $('#btn_height').prop('disabled', false);
-            $('#btn_kml').prop('disabled', false);
+            }
             $('#btn_map').prop('disabled', false);
-            $('#btn_export').prop('disabled', false);
             $('#btn_height').removeClass('btn-outline-secondary').addClass('btn-secondary');
             $('#btn_map').removeClass('btn-outline-secondary').addClass('btn-secondary');
             $('#btn_kml').removeClass('btn-outline-success').addClass('btn-success');
@@ -211,6 +214,12 @@ $(function () {
     $("#coordinate-select").change(function () {
         crsName = $("#coordinate-select option:selected").text();
         crsValue = $("#coordinate-select option:selected").val();
+
+        $('#input-epsg').removeClass('is-invalid');
+        if ($('#table').length) {
+            $('#btn_height').prop('disabled', false);
+        }
+        // if user selects a CRS from the list
         if (crsValue !== '0') {
             $('#input-epsg').prop('disabled', true);
             eel.log({ "type": "warning", "message": `You selected ${crsName} CRS. It will be used for all operations now.` });
@@ -221,50 +230,105 @@ $(function () {
                 $('#btn_map').click();
             }
 
+            // if user selects custom CRS
         } else {
             $('#input-epsg').prop('disabled', false);
             $('#input-epsg').val('');
             $('#input-epsg').focus();
+
             eel.log({ "message": 'Please insert EPSG number of the CRS.' });
 
-            //TODO: add validation for EPSG number and handler for pyproj.exceptions.CRSError: Invalid projection: epsg:0: (Internal Proj Error: proj_create: crs not found)
 
-            // TODO: think about how to handle this better (when we know that user finished typing?)
             $('#input-epsg').on('focusout', function () {
-                // this leads to a bug when log is called couple of times
-                crsValue = $(this).val();
-                $('#output-epsg').val(crsValue).change();
 
-                if (crsValue !== '') {
-                    eel.log({ "type": "warning", "message": `You entered EPSG ${crsValue}. It will be used for all operations now.` });
-                    if ($('#table').length) {
-                        $('#btn_map').click();
-                    }
-                    //TODO: chenge output CRS to same as input CRS
+                $('#input-epsg').removeClass('is-invalid');
+                if ($('#table').length) {
+                    $('#btn_height').prop('disabled', false);
                 }
+                crsValue = $(this).val();
+
+                eel.validateEPSG(crsValue)().then((isValid) => {
+
+                    if (!isValid) {
+                        $('#input-epsg').addClass('is-invalid');
+                        $('#btn_height').prop('disabled', true);
+                        return;
+                    }
+
+                    // // no need to validate EPSG, becuase it was already validated for input CRS
+                    // $('#output-epsg').val(crsValue).change();
+
+                    if (crsValue !== '') {
+                        eel.log({ "type": "warning", "message": `You entered EPSG ${crsValue}. It will be used for all operations now.` });
+                        if ($('#table').length) {
+                            $('#btn_map').click();
+                        }
+                    }
+                });
+
+
             });
         }
         //by default set output CRS to same as input CRS
         $('#output-coordinate-select').val(crsValue).change();
+        $('#output-epsg').val(crsValue=='0'?'':crsValue).change();
+
     });
 
-    $("#coordinate-select").change(function () {
-        crsName = $("#coordinate-select option:selected").text();
-        crsValue = $("#coordinate-select option:selected").val();
+    $("#output-coordinate-select").change(function () {
+        crsName = $("#output-coordinate-select option:selected").text();
+        crsValue = $("#output-coordinate-select option:selected").val();
+
+        $('#output-epsg').removeClass('is-invalid');
+        console.log($('#output-epsg').val());
+        if ($('#table').length && $('#output-epsg').val() !== '') {
+            enableExportButtons();
+        }
+        // if user selects a CRS from the list
         if (crsValue !== '0') {
             $('#output-epsg').prop('disabled', true);
             $('#output-epsg').val(crsValue);
 
+            if ($('#table').length && $('#output-epsg').val() !== '') {
+                enableExportButtons();
+            }
+
+            // if user selects custom CRS
         } else {
             $('#output-epsg').prop('disabled', false);
             $('#output-epsg').val('');
+            disableExportButtons();
+
+            $('#output-epsg').on('focusout', function () {
+                $('#output-epsg').removeClass('is-invalid');
+                if ($('#table').length && $('#output-epsg').val() !== '') {
+                    enableExportButtons();
+                }
+                crsValue = $(this).val();
+
+                eel.validateEPSG(crsValue)().then((isValid) => {
+
+                    if (!isValid) {
+                        $('#output-epsg').addClass('is-invalid');
+                        disableExportButtons();
+                        return;
+                    }
+                });
+            });
 
             //TODO: add validation for EPSG number and handler for pyproj.exceptions.CRSError: Invalid projection: epsg:0: (Internal Proj Error: proj_create: crs not found)
-
         }
-
-
     });
+
+    function disableExportButtons() {
+        $('#btn_export').prop('disabled', true);
+        $('#btn_kml').prop('disabled', true);
+    }
+
+    function enableExportButtons() {
+        $('#btn_export').prop('disabled', false);
+        $('#btn_kml').prop('disabled', false);
+    }
 
     $(document).on('click', '#btn_addMissingHeights', function () {
         console.log("Clicked");

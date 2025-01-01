@@ -51,8 +51,9 @@ Eel documantation on how to publish app:
 
 - [x] 11. Convert coordinates feature
 
-- [ ] 12. Support for custom EPSG
+- [x] 12. Support for custom EPSG
 
 - [ ] 13. Support for more input file types (older excels, csv) and output file (csv)
+
 - [ ] 14. Polish UX/UI
 

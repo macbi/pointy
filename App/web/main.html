@@ -82,8 +82,12 @@
                     </select>
                     <label class="input-group-text">EPSG:</label>
                     <input type="number" class="form-control col-1" id="input-epsg" placeholder=" Input EPSG" value="2176" disabled>
+
                     <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
                             Height</span></button>
+                    <div id="input-epsg-feedback" class="invalid-feedback">
+                        Please choose a correct EPSG number.
+                    </div>
 
                 </div>
                 <label id="progress"></label>
@@ -107,7 +111,11 @@
                     </select>
                     <label class="input-group-text">EPSG:</label>
                     <input type="number" class="form-control col-1" id="output-epsg" placeholder="Output EPSG" value="2176" disabled>
+
                     <button id="btn_export" class="btn btn-outline-success btn-sm" disabled>Excel</button>
+                    <div id="output-epsg-feedback" class="invalid-feedback">
+                        Please choose a correct EPSG number.
+                      </div>
                 </div>
 
                 <div class="btn-group">
