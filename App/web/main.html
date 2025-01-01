@@ -65,7 +65,7 @@
             <hr>
 
             <div class="hstack gap-3 mb-3">
-                
+
                 <div class="input-group input-group-sm">
                     <label class="input-group-text col-2">Input CRS:</label>
                     <select name="coordinate" id="coordinate-select" class="dropdown-toggle">
@@ -81,7 +81,8 @@
                         <option value="0">Custom</option>
                     </select>
                     <label class="input-group-text">EPSG:</label>
-                    <input type="number" class="form-control col-1" id="input-epsg" placeholder=" Input EPSG" value="2176" disabled>
+                    <input type="number" class="form-control col-1" id="input-epsg" placeholder=" Input EPSG"
+                        value="2176" disabled>
 
                     <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
                             Height</span></button>
@@ -110,12 +111,14 @@
                         <option value="0">Custom</option>
                     </select>
                     <label class="input-group-text">EPSG:</label>
-                    <input type="number" class="form-control col-1" id="output-epsg" placeholder="Output EPSG" value="2176" disabled>
+                    <input type="number" class="form-control col-1" id="output-epsg" placeholder="Output EPSG"
+                        value="2176" disabled>
 
                     <button id="btn_export" class="btn btn-outline-success btn-sm" disabled>Excel</button>
+                    <button id="btn_export_csv" class="btn btn-outline-success btn-sm" disabled>CSV</button>
                     <div id="output-epsg-feedback" class="invalid-feedback">
                         Please choose a correct EPSG number.
-                      </div>
+                    </div>
                 </div>
 
                 <div class="btn-group">

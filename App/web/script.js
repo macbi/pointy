@@ -70,6 +70,7 @@ $(function () {
             $('#btn_map').removeClass('btn-outline-secondary').addClass('btn-secondary');
             $('#btn_kml').removeClass('btn-outline-success').addClass('btn-success');
             $('#btn_export').removeClass('btn-outline-success').addClass('btn-success');
+            $('#btn_export_csv').removeClass('btn-outline-success').addClass('btn-success');
             $('#btn_map').click();
             eel.log({ "type": "info", "message": 'If map shows wierd points position, try changing CRS.' })
         }).catch((result) => {
@@ -101,6 +102,28 @@ $(function () {
             console.log("This is the full traceback:\n" + result.errorTraceback);
         });
     });
+
+    $("#btn_export_csv").click(function () {
+        input_crs = $("#input-epsg").val();
+        output_crs = $("#output-epsg").val();
+
+        if (input_crs !== output_crs) {
+            eel.saveDataFrameWithTransformedCoordinates(input_crs, output_crs)().then((result) => {
+            }).catch((result) => {
+                console.log("This is the repr(e) for an exception " + result.errorText);
+                console.log("This is the full traceback:\n" + result.errorTraceback);
+            });
+            return;
+        }
+
+        eel.saveDataFrameToCSV()().then((result) => {
+
+        }).catch((result) => {
+            console.log("This is the repr(e) for an exception " + result.errorText);
+            console.log("This is the full traceback:\n" + result.errorTraceback);
+        });
+    });
+
 
     $("#btn_height").click(function () {
         $("#btn_height").prop('disabled', true).empty().append('<span class="spinner-border spinner-border-sm"></span><span role="status"> Fetching...</span>');
@@ -280,7 +303,7 @@ $(function () {
         crsValue = $("#output-coordinate-select option:selected").val();
 
         $('#output-epsg').removeClass('is-invalid');
-        console.log($('#output-epsg').val());
+
         if ($('#table').length && $('#output-epsg').val() !== '') {
             enableExportButtons();
         }
@@ -323,11 +346,13 @@ $(function () {
     function disableExportButtons() {
         $('#btn_export').prop('disabled', true);
         $('#btn_kml').prop('disabled', true);
+        $('#btn_export_csv').prop('disabled', true);
     }
 
     function enableExportButtons() {
         $('#btn_export').prop('disabled', false);
         $('#btn_kml').prop('disabled', false);
+        $('#btn_export_csv').prop('disabled', false);
     }
 
     $(document).on('click', '#btn_addMissingHeights', function () {

@@ -184,6 +184,16 @@ def saveDataFrameToExcel():
             log({"type":'success', "message":f'Excel file saved at {path}'})
         except Exception as e:
             log({"type":'error', "message":f'Error saving Excel file: {e}'})
+            
+@eel.expose
+def saveDataFrameToCSV():
+    path = getOutputFilePath('.csv')
+    if path:
+        try:
+            pointData.to_csv(path, index=False)
+            log({"type":'success', "message":f'CSV file saved at {path}'})
+        except Exception as e:
+            log({"type":'error', "message":f'Error saving CSV file: {e}'})
 
 
 @eel.expose
