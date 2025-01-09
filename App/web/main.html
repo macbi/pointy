@@ -62,9 +62,7 @@
 
             </div>
 
-            <hr>
-
-            <div class="hstack gap-3 mb-3">
+            <div class="hstack gap-2 mt-3">
 
                 <div class="input-group input-group-sm">
                     <label class="input-group-text col-2">Input CRS:</label>
@@ -83,18 +81,19 @@
                     <label class="input-group-text">EPSG:</label>
                     <input type="number" class="form-control col-1" id="input-epsg" placeholder=" Input EPSG"
                         value="2176" disabled>
-
-                    <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
-                            Height</span></button>
                     <div id="input-epsg-feedback" class="invalid-feedback">
                         Please choose a correct EPSG number.
                     </div>
 
                 </div>
+                <button id="btn_height" class="btn btn-outline-secondary btn-sm" disabled><span>Get
+                        Height</span></button>
                 <label id="progress"></label>
             </div>
 
-            <div class="hstack gap-3 mb-3">
+            <hr>
+
+            <div class="hstack gap-3 mb-3 align-items-start">
 
                 <div class="input-group input-group-sm">
                     <label class="input-group-text col-2">Output CRS:</label>

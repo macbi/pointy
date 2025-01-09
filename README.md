@@ -53,7 +53,7 @@ Eel documantation on how to publish app:
 
 - [x] 12. Support for custom EPSG
 
-- [ ] 13. Support for more input file types (older excels, csv) and output file (csv)
+- [x] 13. Support for csv output file
 
-- [ ] 14. Polish UX/UI
+- [x] 14. Polish UX/UI
 
