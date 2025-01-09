@@ -23,12 +23,6 @@ def log(message):
     loggingList.insert(0, message)
     eel.updateList("logging-list", loggingList)
 
-@eel.expose                         # Expose this function to Javascript
-def handleinput(x):
-    print('%s' % x)
-
-eel.say_hello_js('connected!')   # Call a Javascript function
-
 @eel.expose
 def validateEPSG(epsg):
     print(f'EPSG: {epsg}')
@@ -90,7 +84,9 @@ def addHeightToDataFrame(input_crs):
     
     global pointData
     errorNumber = 0
+    log({"type":'info',"message":f'Adding heights to all points from <a href="https://services.gugik.gov.pl/nmt/" target="_blank">GUGiK API</a>'})
     for index, row in pointData.iterrows():
+        
         height = getPointHeight(row['Name'],row['X'],row['Y'],input_crs)
         if height == 'server error':
             errorNumber += 1
